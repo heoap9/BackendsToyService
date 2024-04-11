@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Post Details</title>
+    <link rel="stylesheet" href="/css/common.css">
+</head>
+<body>
+<div class="container">
+    <h1 th:text="${post.title}">Post Title</h1>
+    <p th:text="${post.content}">Post content</p>
+
+    <h2>Comments</h2>
+    <ul>
+        <li th:each="comment : ${comments}" th:text="${comment.content}">Comment content</li>
+    </ul>
+
+    <h2>Likes</h2>
+    <p>Likes count: <span th:text="${likesCount}">0</span></p>
+</div>
+</body>
+</html>

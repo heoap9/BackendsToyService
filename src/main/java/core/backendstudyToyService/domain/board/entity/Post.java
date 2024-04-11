@@ -1,5 +1,6 @@
-package core.backendstudyToyService.domain.entity;
+package core.backendstudyToyService.domain.board.entity;
 
+import core.backendstudyToyService.domain.member.entitiy.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
