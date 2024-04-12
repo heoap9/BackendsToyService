@@ -22,6 +22,6 @@ logging:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
 #로거로 찍음
-#참 애매한데.. ?.?는 어떤 정보가 넘어가는지 정확하게 모른다
+#pstm의 특성을 잘 가져가야만 한다
 
 
