@@ -17,7 +17,7 @@ public class MemberController {
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
     }
-
+    //a
     @GetMapping("/signup")
     public String showSignUpForm(Model model) {
         model.addAttribute("member", new Member());
