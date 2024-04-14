@@ -11,6 +11,10 @@
     <p><strong>작성자:</strong> <span th:text="${postDetails.authorName}">게시글 작성자</span></p>
     <p th:text="${postDetails.content}">게시글 내용</p>
     <p><strong>좋아요:</strong> <span th:text="${postDetails.likeCount}">0</span></p>
+    <form action="#" th:action="@{/posts/{postId}/likes(postId=${postDetails.postId})}" method="post">
+        <button type="submit">Like</button>
+    </form>
+
     <div>
         <h3>댓글목록</h3>
         <ul>
@@ -19,6 +23,10 @@
                 <span th:text="${comment.content}">댓글내용</span>
             </li>
         </ul>
+        <form action="#" th:action="@{/posts/{postId}/comments(postId=${postDetails.postId})}" method="post">
+            <textarea name="content" placeholder="Write a comment..."></textarea>
+            <button type="submit">Submit Comment</button>
+        </form>
     </div>
 </div>
 <div th:if="${error}">
