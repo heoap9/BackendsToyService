@@ -10,4 +10,5 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
 
     // 특정 회원이 누른 좋아요 조회
     List<Like> findByMemberId(Long memberId);
+
 }
