@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 public class Reply {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -22,6 +22,5 @@ public class Reply {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    // 댓글 내용 등
     private String content;
 }

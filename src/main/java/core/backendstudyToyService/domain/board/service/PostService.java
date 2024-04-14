@@ -8,4 +8,8 @@ import java.util.Optional;
 
 public interface PostService {
     public PostDetailsDTO getPostDetails(Long postId);
+
+    void addLikePost(Long postId, Long userId);
+
+    void addCommentPost(Long postId, Long userId, String content);
 }
