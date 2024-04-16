@@ -22,6 +22,7 @@ public class Post {
 
     private String title;
     private String content;
+    private String imagePath;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Reply> replyList = new ArrayList<>();
