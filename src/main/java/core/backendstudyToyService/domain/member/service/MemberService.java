@@ -11,6 +11,7 @@ public interface MemberService {
     Optional<Member> findMemberById(Long memberId);
     List<Member> findAllMembers();
     void deleteMember(Long memberId);
+    Member login(Member member);
 
-    Optional<Member> findMemberByUsernameAndPassword(String username, String password);
+    boolean isUsernameAvailable(String username);
 }

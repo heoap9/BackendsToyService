@@ -8,6 +8,9 @@ import core.backendstudyToyService.domain.member.repository.MemberRepository;
 import core.backendstudyToyService.domain.board.repository.PostRepository;
 import core.backendstudyToyService.domain.board.repository.ReplyRepository;
 import core.backendstudyToyService.domain.board.repository.LikeRepository;
+import core.backendstudyToyService.domain.member.service.MemberService;
+import core.backendstudyToyService.domain.member.service.memberserviceimpl.MemberServiceImpl;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,9 +21,11 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
 public class RepositoryIntegrationTest {
+
 
     @Autowired
     private MemberRepository memberRepository;
@@ -126,4 +131,6 @@ public class RepositoryIntegrationTest {
         assertThat(existsBeforeDelete).isTrue();
         assertThat(existsAfterDelete).isFalse();
     }
+
+
 }
