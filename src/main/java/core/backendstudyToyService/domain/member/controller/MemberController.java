@@ -1,14 +1,15 @@
 package core.backendstudyToyService.domain.member.controller;
 
 import core.backendstudyToyService.domain.member.entitiy.Member;
+import core.backendstudyToyService.domain.member.repository.MemberRepository;
 import core.backendstudyToyService.domain.member.service.MemberService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -17,6 +18,9 @@ public class MemberController {
 
     private final MemberService memberService;
     private final HttpSession httpSession;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
 
     @Autowired
@@ -33,7 +37,7 @@ public class MemberController {
     }
 
     @PostMapping("/signup")
-    public String signUp(Member member, BindingResult bindingResult) {
+    public String signUp(Member member) {
 
         try {
             memberService.saveMember(member);
@@ -54,18 +58,22 @@ public class MemberController {
 
     @PostMapping("/login")
     public String login(@RequestParam Member member) {
-        //로그인 후 메인페이지로 진입하는 페이지를 만들어주어야 합니다
-        Member EnterMember = memberService.login(member);
-
-        if (EnterMember == null) {
-            System.out.println("false");
-        }
         return "/home";
     }
 
-    @GetMapping("/checkUsername")
-    public boolean checkUsername(@RequestParam String username) {
-        return !memberService.isUsernameAvailable(username);
+    @PostMapping("/checkUsername")
+    public boolean checkUsernameExists(@RequestBody String username) {
+        if (username == null || username.trim().isEmpty()) {
+            // 유저네임이 null이거나 공백인 경우
+            return false; // 실패
+        }
+
+        return memberService.isUsernameAvailable(username);
     }
 
+    @GetMapping("home")
+    public String testhome(Member member, Model model){
+        model.addAttribute("username", member.getUsername());
+        return "home";
+    }
 }

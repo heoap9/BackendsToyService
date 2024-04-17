@@ -2,50 +2,44 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Sign Up</title>
-    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/common.css">
 </head>
 <body>
 <div class="container">
     <h1>Sign Up</h1>
-    <form th:action="@{/signup}" method="post" onsubmit="return validateForm()">
-        <div><label>Username: <input type="text" name="username"/></label></div>
+    <form th:action="@{/signup}" method="post">
+        <div><label>Username: <input type="text" name="username" onsubmit="return checkUsername()"/></label></div>
         <div><label>Password: <input type="password" name="password"/></label></div>
         <div><input type="submit" value="Register"/></div>
     </form>
 </div>
-
 <script th:inline="javascript">
-    $(document).ready(function() {
-        //ID 중복 확인
-        //id를 입력할 수 있는 input text 영역을 벗어나면 동작한다.
-        $("#id").on("focusout", function() {
-
-            var id = $("#id").val();
-
-            if(id == '' || id.length == 0) {
-                $("#label1").css("color", "red").text("공백은 ID로 사용할 수 없습니다.");
-                return false;
-            }
-
-            //Ajax로 전송
-            $.ajax({
-                url : './checkUsername',
-                data : {
-                    id : id
-                },
-                type : 'POST',
-                dataType : 'json',
-                success : function(result) {
-                    if (result == true) {
-                        $("#label1").css("color", "black").text("사용 가능한 ID 입니다.");
-                    } else{
-                        $("#label1").css("color", "red").text("사용 불가능한 ID 입니다.");
-                        $("#id").val('');
-                    }
+    function checkUsername() {
+        var username = document.forms[0]["username"].value;
+        if (username === "") {
+            alert('plz input your name')
+            return false;
+        }
+        fetch('/checkUsername', {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({username:username}),
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data === true) {
+                    alert('이미 사용 중인 아이디입니다.');
+                    return false;
+                } else {
+                    alert('사용 가능한 아이디입니다.');
+                    return true;
                 }
-            }); //End Ajax
-        });
-    });
+            });
+    }
 </script>
 </body>
 </html>
+
+

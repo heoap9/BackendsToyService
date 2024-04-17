@@ -76,7 +76,7 @@ public class MemberServiceImpl implements MemberService {
         // 해당 username을 가진 회원이 존재하는지 조회
         Optional<Member> existingMember = memberRepository.findByUsername(username);
         // 존재하지 않으면 사용 가능(true), 존재하면 이미 사용 중(false)
-        return existingMember == null;
+        return !existingMember.isPresent();
     }
 
 }
