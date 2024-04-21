@@ -7,39 +7,33 @@
 <body>
 <div class="container">
     <h1>Sign Up</h1>
-    <form th:action="@{/signup}" method="post">
-        <div><label>Username: <input type="text" name="username" onsubmit="return checkUsername()"/></label></div>
-        <div><label>Password: <input type="password" name="password"/></label></div>
+    <form id="signupForm" th:action="@{/signup}" method="post">
+        <div><label>Username: <input type="text" name="username" id="username" autocomplete="off"/></label></div>
+        <div class="showDuplicated"></div>
+        <div><label>Password: <input type="password" name="password" autocomplete="on"/></label></div>
         <div><input type="submit" value="Register"/></div>
     </form>
 </div>
 <script th:inline="javascript">
-    function checkUsername() {
-        var username = document.forms[0]["username"].value;
-        if (username === "") {
-            alert('plz input your name')
-            return false;
-        }
-        fetch('/checkUsername', {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({username:username}),
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data === true) {
-                    alert('이미 사용 중인 아이디입니다.');
-                    return false;
-                } else {
-                    alert('사용 가능한 아이디입니다.');
-                    return true;
-                }
-            });
-    }
+    const usernameInput = document.querySelector("#username");
+    const showDuplicated = document.querySelector(".showDuplicated");
+
+    usernameInput.onblur = () => {
+        let tmpid = usernameInput.value;
+
+        const httpRequest = new XMLHttpRequest();
+
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === 4 && httpRequest.status === 200) {
+                const response = httpRequest.responseText;
+                showDuplicated.innerHTML = `<span>${tmpid} is ${response === "true" ? "invalid!" : "valid"}</span>`;
+            }
+        };
+
+        httpRequest.open("POST", "/signup/checkUsername", true);
+        httpRequest.setRequestHeader("Content-Type", "application/json");
+        httpRequest.send(JSON.stringify({ username: tmpid }));
+    };
 </script>
 </body>
 </html>
-
-

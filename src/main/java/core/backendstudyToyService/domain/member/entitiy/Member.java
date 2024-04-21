@@ -17,9 +17,12 @@ public class Member {
     @GeneratedValue
     private Long id;
 
+    @Column(unique = true)
     private String username;
 
     private String password;
+
+    private String role;
 
     @OneToMany(mappedBy = "member")
     private List<Post> postList = new ArrayList<>();

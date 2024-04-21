@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class MemberSecuritySevice implements UserDetailsService {
+public class MemberSecurityService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
 
-    public MemberSecuritySevice(MemberRepository memberRepository) {
+    public MemberSecurityService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 

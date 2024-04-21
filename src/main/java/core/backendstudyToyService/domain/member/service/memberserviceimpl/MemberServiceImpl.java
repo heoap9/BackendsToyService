@@ -1,11 +1,15 @@
 package core.backendstudyToyService.domain.member.service.memberserviceimpl;
 
+import core.backendstudyToyService.domain.member.dto.loginDTO;
 import core.backendstudyToyService.domain.member.entitiy.Member;
 import core.backendstudyToyService.domain.member.service.MemberService;
 import core.backendstudyToyService.domain.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -22,16 +26,18 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Member saveMember(Member member) {
-        if (DuplicateMember(member)){
-            return null;
+    public void saveMember(loginDTO dto) {
+        if (DuplicateMember(dto)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 가입된 유저");
+        } else {
+            Member member = new Member();
+            member.setUsername(dto.getUsername());
+            member.setPassword(passwordEncoder.encode(dto.getPassword()));
+            member.setRole("user");
+            memberRepository.save(member);
         }
-        member.setPassword(passwordEncoder.encode(member.getPassword()));
-        member.setUsername(member.getUsername());
-
-        this.memberRepository.save(member);
-        return member;
     }
+
 
     @Override
     public Optional<Member> findMemberById(Long memberId) {
@@ -49,20 +55,19 @@ public class MemberServiceImpl implements MemberService {
     }
 
     // 중복 검사
-    public boolean DuplicateMember(Member member) {
-        Optional<Member> existingMember = memberRepository.findByUsername(member.getUsername());
+    public boolean DuplicateMember(loginDTO loginDTO) {
+        Optional<Member> existingMember = memberRepository.findByUsername(loginDTO.getUsername());
 
         return existingMember.isPresent();
     }
 
 
-    public Member login(Member loginMember) {
-        Optional<Member> memberName = memberRepository.findByUsername(loginMember.getUsername());
-        if (memberName.isPresent()) {
-            Member member = memberName.get();
-            if (loginMember.getPassword().equals(member.getPassword())) {
-                Member successLogin = loginMember;
-                return successLogin;
+    public loginDTO login(loginDTO dto) {
+       Optional<Member> enter = memberRepository.findByUsername(dto.getUsername());
+        if (enter.isPresent()) {
+            Member member = enter.get();
+            if (dto.getPassword().equals(member.getPassword())) {
+                return dto;
             }else {
                 return null;
             }
@@ -75,8 +80,7 @@ public class MemberServiceImpl implements MemberService {
     public boolean isUsernameAvailable(String username) {
         // 해당 username을 가진 회원이 존재하는지 조회
         Optional<Member> existingMember = memberRepository.findByUsername(username);
-        // 존재하지 않으면 사용 가능(true), 존재하면 이미 사용 중(false)
-        return !existingMember.isPresent();
+        return existingMember.isPresent();
     }
 
 }
