@@ -1,5 +1,6 @@
 package core.backendstudyToyService.domain.member.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,6 +8,10 @@ import lombok.Setter;
 @Getter
 public class loginDTO {
 
+    @NotBlank(message = "input your name")
     private String username;
+
+
+    @NotBlank(message = "input password")
     private String password;
 }
