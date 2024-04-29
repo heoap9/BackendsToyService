@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Login</title>
-    <link rel="stylesheet" href="/common.css">
+    <link rel="stylesheet" th:href="@{/common.css}"/>
     <script>
         function validateForm() {
             var username = document.forms["loginForm"]["username"].value;
@@ -20,7 +20,7 @@
     <form th:action="@{/login/login-proc}" method="post" name="loginForm" onsubmit="return validateForm()">
 
         <div><label>Username: <input type="text" name="username"/></label></div>
-        <div><label>Password: <input type="password" name="password"/></label></div>
+        <div><label>Password: <input type="password" name="password" autocomplete="on"/></label></div>
         <div>
             <input type="submit" value="Login"/>
             <a href="/signup">Sign up</a>

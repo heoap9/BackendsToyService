@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class loginDTO {
+public class MemberDTO {
 
     @NotBlank(message = "input your name")
     private String username;

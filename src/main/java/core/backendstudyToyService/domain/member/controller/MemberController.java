@@ -1,6 +1,6 @@
 package core.backendstudyToyService.domain.member.controller;
 
-import core.backendstudyToyService.domain.member.dto.loginDTO;
+import core.backendstudyToyService.domain.member.dto.MemberDTO;
 import core.backendstudyToyService.domain.member.entitiy.Member;
 import core.backendstudyToyService.domain.member.repository.MemberRepository;
 import core.backendstudyToyService.domain.member.service.MemberService;
@@ -13,9 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-
-import java.util.stream.DoubleStream;
-
 
 @Controller
 public class MemberController {
@@ -30,7 +27,7 @@ public class MemberController {
     @GetMapping("home")
     public String testhome(Member member, Model model) {
         model.addAttribute("username", member.getUsername());
-        return "home";
+        return "/home";
     }
 
     @Autowired
@@ -48,7 +45,7 @@ public class MemberController {
 
     @PostMapping("/signup")
     @Transactional
-    public String signUp(loginDTO dto) {
+    public String signUp(MemberDTO dto) {
 
         try {
             memberService.saveMember(dto);
@@ -60,6 +57,7 @@ public class MemberController {
         return "redirect:/login"; // 회원가입 후 로그인 페이지로 리다이렉트
     }
 
+    /* 중복 아이디 검증 로직 */
     @GetMapping("/signup/checkUsername/{username}")
     public ResponseEntity<String> checkUsernameExists(@PathVariable String username) {
         boolean isAvailable = memberService.isUsernameAvailable(username);

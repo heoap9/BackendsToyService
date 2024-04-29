@@ -1,7 +1,6 @@
 package core.backendstudyToyService.domain.member.controller;
 
-import core.backendstudyToyService.domain.member.dto.loginDTO;
-import core.backendstudyToyService.domain.member.entitiy.Member;
+import core.backendstudyToyService.domain.member.dto.MemberDTO;
 import core.backendstudyToyService.domain.member.service.MemberService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,8 +23,8 @@ public class LoginController {
     }
 
     @PostMapping("/login/login-proc")
-    public String login(loginDTO logindto) {
-        System.out.println(logindto.getUsername());
+    public String login(MemberDTO dto) {
+        System.out.println(dto.getUsername());
 
         return "/home";
     }

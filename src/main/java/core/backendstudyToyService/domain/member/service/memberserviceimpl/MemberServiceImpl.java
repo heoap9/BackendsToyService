@@ -1,6 +1,6 @@
 package core.backendstudyToyService.domain.member.service.memberserviceimpl;
 
-import core.backendstudyToyService.domain.member.dto.loginDTO;
+import core.backendstudyToyService.domain.member.dto.MemberDTO;
 import core.backendstudyToyService.domain.member.entitiy.Member;
 import core.backendstudyToyService.domain.member.service.MemberService;
 import core.backendstudyToyService.domain.member.repository.MemberRepository;
@@ -26,8 +26,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void saveMember(loginDTO dto) {
-        if (DuplicateMember(dto)) {
+    public void saveMember(MemberDTO dto) {
+        if (isUsernameAvailable(dto.getUsername())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 가입된 유저");
         } else {
             Member member = new Member();
@@ -54,15 +54,9 @@ public class MemberServiceImpl implements MemberService {
 
     }
 
-    // 중복 검사
-    public boolean DuplicateMember(loginDTO loginDTO) {
-        Optional<Member> existingMember = memberRepository.findByUsername(loginDTO.getUsername());
-
-        return existingMember.isPresent();
-    }
 
 
-    public loginDTO login(loginDTO dto) {
+    public MemberDTO login(MemberDTO dto) {
        Optional<Member> enter = memberRepository.findByUsername(dto.getUsername());
         if (enter.isPresent()) {
             Member member = enter.get();
