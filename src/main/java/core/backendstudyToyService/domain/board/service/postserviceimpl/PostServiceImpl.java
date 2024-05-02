@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -34,6 +35,13 @@ public class PostServiceImpl implements PostService{
      * @param postId 게시글 번호를 받습니다
      * @return 게시글의 자세한 정보를 모두 반환합니다
      */
+
+    @Override
+    public List<Post> findAllPosts(){ // 페이징을 기능구현 보류
+        return postRepository.findAll();
+    }
+
+    @Override
     public PostDetailsDTO getPostDetails(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("찾는 게시글이 없습니다: " + postId +"번호"));

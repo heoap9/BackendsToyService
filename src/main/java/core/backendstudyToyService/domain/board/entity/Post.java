@@ -34,11 +34,6 @@ public class Post {
         reply.setPost(this);
     }
 
-    public void addLike(Like like) {
-        likes.add(like);
-        like.setPost(this);
-    }
-
     // 좋아요 수를 반환하는 메서드
     public int getLikeCount() {
         return likes.size();

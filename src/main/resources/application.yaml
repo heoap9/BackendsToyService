@@ -1,20 +1,23 @@
 spring:
   datasource:
-    url: jdbc:h2:tcp://localhost/~/test
+    url: jdbc:h2:tcp://localhost/~/jpashop
     username: sa
     password:
     driver-class-name: org.h2.Driver
 
-
   jpa:
     hibernate:
       ddl-auto: create
-      #어플리케이션 시점에 테이블 다지우고 jpa엔티티 정보로 생성함
+      #create 어플리케이션 시점에 테이블 다지우고 jpa엔티티 정보로 생성함
+      #update 데이터를 저장해둠
     properties:
       hibernate:
 #        show_sql: true
         #프린트로 찍음
         format_sql: true
+  web:
+    resources:
+      static-locations: classpath:/static/
 
 
 logging:
@@ -23,5 +26,13 @@ logging:
     org.hibernate.type: trace
 #로거로 찍음
 #pstm의 특성을 잘 가져가야만 한다
+
+thymeleaf:
+  prefix=classpath: templates/
+  suffix: .html
+  check-template-location: true
+  cache: false
+  mvc:
+    static-path-pattern: "/static/**"
 
 

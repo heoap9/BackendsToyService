@@ -4,7 +4,6 @@ package core.backendstudyToyService.domain.board.controller;
 import core.backendstudyToyService.domain.board.dto.PostDetailsDTO;
 import core.backendstudyToyService.domain.board.service.PostService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +35,12 @@ public class PostController {
             model.addAttribute("에러!",e.getMessage());
             return "error";
         }
+    }
+
+    @GetMapping("/posts")
+    public String getPostList(Model model){
+        model.addAttribute("posts",postService.findAllPosts());
+        return "post-list";
     }
 
     /**

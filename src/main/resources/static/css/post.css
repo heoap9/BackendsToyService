@@ -1,0 +1,128 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px;
+    background: white;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin: 20px;
+}
+
+.post {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.post-profile-pic {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+    background-color: #ccc; /* Placeholder for the image */
+}
+
+.post-user {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.post-date {
+    color: #aaa;
+    font-size: 0.9em;
+}
+
+.post-content {
+    margin-bottom: 15px;
+}
+
+.comment-section {
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.comment {
+    display: flex;
+    align-items: flex-start;
+    margin-top: 10px;
+}
+
+.comment-profile-pic {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+    background-color: #ccc; /* Placeholder for the image */
+}
+
+.comment-content {
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 4px;
+    width: 100%;
+}
+
+input[type="text"], input[type="password"], textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+}
+
+input[type="submit"], button {
+    width: calc(100% - 20px);
+    padding: 10px;
+    background-color: #5C67F2;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+input[type="submit"]:hover, button:hover {
+    background-color: #434AB3;
+}
+
+.post a, .comment a {
+    color: #5C67F2;
+    text-decoration: none;
+}
+
+.post a:hover, .comment a:hover {
+    text-decoration: underline;
+}
+
+ul {
+    padding: 0;
+}
+
+li {
+    list-style: none;
+    margin-top: 5px;
+}
+
+label {
+    text-align: left;
+    width: 100%;
+}
