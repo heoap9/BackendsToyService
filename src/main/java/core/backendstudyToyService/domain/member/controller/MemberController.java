@@ -23,12 +23,7 @@ public class MemberController {
     @Autowired
     private MemberRepository memberRepository;
 
-    // test를 위한 임시 홈화면 입니다
-    @GetMapping("home")
-    public String testhome(Member member, Model model) {
-        model.addAttribute("username", member.getUsername());
-        return "/home";
-    }
+
 
     @Autowired
     public MemberController(MemberService memberService, HttpSession httpSession) {
