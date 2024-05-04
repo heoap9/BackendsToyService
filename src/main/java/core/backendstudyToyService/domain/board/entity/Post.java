@@ -10,23 +10,46 @@ import java.util.List;
 
 @Entity
 @Table(name = "posts")
-@Getter @Setter
+@Getter
+@Setter
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long postCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Column(name = "title") // 제목
     private String title;
-    private String content;
-    private String imagePath;
 
+    @Column(name = "content") // 내용
+    private String content;
+
+    @Column(name = "upload_Date") // 업로드 날짜
+    private java.sql.Date uploadDate;
+
+    @Column(name = "modified_Date") // 수정 날짜
+    private java.sql.Date modifiedDate;
+
+    @Column(name = "isDeleted") // 삭제 여부
+    private char isDeleted;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL) // 이미지 파일
+    private List<PostImage> images = new ArrayList<>();
+
+//    @Column(name = "allow_comment") // 댓글 허용 여부
+//    private String allow_comment;
+
+//    @Column(name = "views") // 조회수
+//    private int views;
+
+    // 댓글
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Reply> replyList = new ArrayList<>();
 
+    // 좋아요
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Like> likes = new ArrayList<>();
 
@@ -44,4 +67,6 @@ public class Post {
     public int getLikeCount() {
         return likes.size();
     }
+
+
 }

@@ -1,15 +1,21 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <title>Create New Post</title>
-    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/static/common.css">
 </head>
 <body>
 <div class="container">
     <h1>Create New Post</h1>
+    <!-- 게시글 작성 폼 -->
     <form th:action="@{/posts}" th:object="${post}" method="post">
+        <!-- 제목 -->
         <div><label>Title: <input type="text" th:field="*{title}"/></label></div>
+        <!-- 내용 -->
         <div><label>Content: <textarea th:field="*{content}"></textarea></label></div>
+        <!-- 이미지 첨부 -->
+        <div><input type="hidden" th:value="${imageBase64}" name="imageBase64"/></div>
+        <!-- 제출 -->
         <div><input type="submit" value="Submit"/></div>
     </form>
 </div>
