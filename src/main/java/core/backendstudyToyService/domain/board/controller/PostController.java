@@ -2,15 +2,10 @@ package core.backendstudyToyService.domain.board.controller;
 
 
 import core.backendstudyToyService.domain.board.dto.PostDTO;
+import core.backendstudyToyService.domain.board.dto.PostDetailsDTO;
 import core.backendstudyToyService.domain.board.service.PostService;
-import core.backendstudyToyService.domain.common.Criteria;
-import core.backendstudyToyService.domain.common.PageDTO;
-import core.backendstudyToyService.domain.common.PagingResponseDTO;
-import core.backendstudyToyService.domain.common.ResponseDTO;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,67 +13,74 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
-@RestController
+@Controller
+@AllArgsConstructor//현재 구현체가 하나이므로 생성자 주입을 사용했습니다
+//별도의 서비스 구현체가 있다면 바꿔주세요
 public class PostController {
+    //메롱
+    private PostService postService;
 
-    private final PostService postService;
-    private final ModelMapper modelMapper;
-
-    @Autowired
-    public PostController(PostService postService, ModelMapper modelMapper) {
-        this.postService = postService;
-        this.modelMapper = modelMapper;
+    /**
+     * 게시글에 포함된 댓글목록,좋아요 수를 같이 반환합니다
+     * @param postId 게시글 번호가 들어옵니다
+     * @param model 대빵많이 해야되니까 모델이 필요해요
+     * @return 게시글 번호를 등록하면 디테일폼으로 반환합니다
+     */
+    @GetMapping("/posts/{postId}")
+    public String getPostDetails(@PathVariable Long postId, Model model){
+        try {
+            PostDetailsDTO postDetailsDTO = postService.getPostDetails(postId);
+            //이미지 프로세싱은 보류
+            model.addAttribute("postDetails",postDetailsDTO);
+            return "post-details";
+        }catch (RuntimeException e){
+            model.addAttribute("에러!",e.getMessage());
+            return "error";
+        }
     }
 
-    // 1. 게시글 조회 파트
-    // 1-1. 게시판 목록 조회 - 페이지별 조회(한 페이지당 10개씩 보여주기)
-// 1. 게시글 조회 파트
-// 1-1. 게시판 목록 조회 - 페이지별 조회(한 페이지당 10개씩 보여주기)
-    @GetMapping("/post")
-    public String selectBoardList(@RequestParam(name = "currentPage", required = false, defaultValue = "1") String currentPage, Model model) {
-        Criteria cri = new Criteria(Integer.valueOf(currentPage), 10);
-        PagingResponseDTO pagingResponseDTO = new PagingResponseDTO();
-        int total = postService.selectPostTotal();
-
-        pagingResponseDTO.setData(postService.selectPostListWithPaging(cri));
-        pagingResponseDTO.setPageInfo(new PageDTO(cri, total));
-
-        model.addAttribute("pagingResponseDTO", pagingResponseDTO); // 모델에 추가
-
-        return "post";
+    @GetMapping("/posts")
+    public String getPostList(Model model){
+        model.addAttribute("posts",postService.findAllPosts());
+        return "post-list";
     }
 
+    /**
+     * 게시글에 좋아요를 등록합니다
+     * 유저 세션정보에 따라 좋아요 결과가 반영됩니다
+     * @param postId 게시글 번호
+     * @return 리다이렉션 결과를 반환합니다
+     */
+    @PostMapping("/posts/{postId}/likes")
+    public String addLikePost(@PathVariable Long postId){
+        Long userId = 1L;
+        postService.addLikePost(postId,userId);
+        return "redirect:/posts/"+postId;
+    }//세션정보가 추가되면 파라미터에 추가해주세요!
 
-    // 1-2. 게시글 상세 내용 조회 - 게시글 제목, 내용, 작성자, 작성일
+    /**
+     * 게시글 댓글을 등록합니다
+     * 유저 세션정보가 있으면 작성자도 포함됩니다
+     * @param postId 게시글번호
+     * @param content 댓글내용
+     * @return 리다이렉션 결과를 반환합니다
+     */
+    @PostMapping("/posts/{postId}/comments")
+    public String addComment(@PathVariable Long postId,@RequestParam String content){
+        Long userId = 1L;
+        postService.addCommentPost(postId,userId,content);
+        return "redirect:/posts/"+postId;
+    }//세션정보가 추가되면 파라미터에 추가해주세요!
 
-    // 1-3. 게시글 댓글 조회
-
-    // 1-4. 게시판 카테고리 조회
-
-
-
-    // 2. 게시글 작성, 수정, 삭제 파트
-
-    // 2-1. 게시글 작성 페이지 조회
-    @GetMapping("/newpost")
-    public String showNewPostForm(Model model) {
-        model.addAttribute("post", new PostDTO());
-        model.addAttribute("imageBase64", "");
-        return "newpost"; // 새 게시글 작성 페이지로 이동
-    }
-
-    // 2-2. 게시글 작성
-    @PostMapping("/newpost")
-    public String insertBoard(@ModelAttribute PostDTO postDTO, @RequestParam(required = false) MultipartFile[] images) throws IOException {
+    /**
+     * 게시글을 등록합니다
+     * 텍스트가 기본이며, 이미지는 최대 3장 첨부 가능합니다.
+     */
+    @PostMapping("/newPost")
+    public String insertPost(@ModelAttribute PostDTO postDTO, @RequestParam(required = false) MultipartFile[] images) throws IOException {
         postService.insertPost(postDTO, List.of(images));
 
-        System.out.println("[PostController] 컨트롤러 동작");
-        return "redirect:/posts/" + postDTO.getId();
+        System.out.println("[PostController] insertPost 동작");
+        return "redirect:/posts/";
     }
-
-    // 2-3. 게시글 수정
-
-
-
-
 }

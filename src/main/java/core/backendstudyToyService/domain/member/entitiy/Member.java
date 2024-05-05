@@ -17,8 +17,12 @@ public class Member {
     @GeneratedValue
     private Long id;
 
+    @Column(unique = true)
     private String username;
+
     private String password;
+
+    private String role;
 
     @OneToMany(mappedBy = "member")
     private List<Post> postList = new ArrayList<>();
@@ -28,5 +32,6 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     private List<Reply> replyList = new ArrayList<>();
+
 }
 

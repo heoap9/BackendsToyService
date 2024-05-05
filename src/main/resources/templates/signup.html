@@ -7,11 +7,46 @@
 <body>
 <div class="container">
     <h1>Sign Up</h1>
-    <form th:action="@{/signup}" method="post">
-        <div><label>Username: <input type="text" name="username"/></label></div>
+    <form id="signupForm" th:action="@{/signup}" method="post" onsubmit="return validateForm()">
+        <label for="usernameInput">Username:</label>
+        <input type="text" id="usernameInput" name="username">
+        <div id="availabilityMessage"></div>
         <div><label>Password: <input type="password" name="password"/></label></div>
-        <div><input type="submit" value="Register"/></div>
+        <div><input type="submit" id="Register" value="Register"/></div> <!-- 버튼의 id를 "Register"로 설정 -->
     </form>
 </div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('#usernameInput').on('input', function(){
+            var username = $(this).val().trim();
+            $.ajax({
+                type: 'GET',
+                url: '/signup/checkUsername/' + username,
+                success: function (data) {
+                    if (data === "사용 가능한 사용자명입니다.") {
+                        $('#availabilityMessage').text(data);
+                        $('#Register').prop('disabled', false); // 버튼의 id를 "Register"로 설정
+                    } else {
+                        $('#availabilityMessage').text(data);
+                        $('#Register').prop('disabled', true); // 버튼의 id를 "Register"로 설정
+                    }
+                },
+                error: function () {
+                    $('#availabilityMessage').text('서버에서 사용자명을 확인하는 중 오류가 발생했습니다.');
+                }
+            });
+        });
+    });
+
+    function validateForm() {
+        var username = document.getElementById("usernameInput").value;
+        var password = document.getElementsByName("password")[0].value;
+        if (username === "" || password === "") {
+            alert("Please input your name and pw.");
+            return false;
+        }
+    }
+</script>
 </body>
 </html>

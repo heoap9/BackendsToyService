@@ -3,13 +3,24 @@
 <head>
     <title>Login</title>
     <link rel="stylesheet" href="/css/common.css">
+    <script>
+        function validateForm() {
+            var username = document.forms["loginForm"]["username"].value;
+            var password = document.forms["loginForm"]["password"].value;
+            if (username === "" || password === "") {
+                alert("Please check your name and pw.");
+                return false;
+            }
+        }
+    </script>
 </head>
 <body>
 <div class="container">
     <h1>Login</h1>
-    <form th:action="@{/login}" method="post">
+    <form th:action="@{/login/login-proc}" method="post" name="loginForm" onsubmit="return validateForm()">
+
         <div><label>Username: <input type="text" name="username"/></label></div>
-        <div><label>Password: <input type="password" name="password"/></label></div>
+        <div><label>Password: <input type="password" name="password" autocomplete="on"/></label></div>
         <div>
             <input type="submit" value="Login"/>
             <a href="/signup">Sign up</a>

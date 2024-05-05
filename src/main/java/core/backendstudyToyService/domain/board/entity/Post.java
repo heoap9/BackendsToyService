@@ -15,7 +15,7 @@ import java.util.List;
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long postCode;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -56,11 +56,6 @@ public class Post {
     public void addReply(Reply reply) {
         replyList.add(reply);
         reply.setPost(this);
-    }
-
-    public void addLike(Like like) {
-        likes.add(like);
-        like.setPost(this);
     }
 
     // 좋아요 수를 반환하는 메서드

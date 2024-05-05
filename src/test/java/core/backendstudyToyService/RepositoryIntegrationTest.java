@@ -8,6 +8,9 @@
 //import core.backendstudyToyService.domain.board.repository.PostRepository;
 //import core.backendstudyToyService.domain.board.repository.ReplyRepository;
 //import core.backendstudyToyService.domain.board.repository.LikeRepository;
+//import core.backendstudyToyService.domain.member.service.MemberService;
+//import core.backendstudyToyService.domain.member.service.memberserviceimpl.MemberServiceImpl;
+//import org.assertj.core.api.AssertionsForClassTypes;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.DisplayName;
 //import org.junit.jupiter.api.Test;
@@ -18,9 +21,11 @@
 //import java.util.Optional;
 //
 //import static org.assertj.core.api.Assertions.assertThat;
+//import static org.junit.jupiter.api.Assertions.assertThrows;
 //
 //@DataJpaTest
 //public class RepositoryIntegrationTest {
+//
 //
 //    @Autowired
 //    private MemberRepository memberRepository;
@@ -127,20 +132,3 @@
 //        assertThat(existsAfterDelete).isFalse();
 //    }
 //}
-
-package core.backendstudyToyService;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-public class RepositoryIntegrationTest {
-    @Test
-    @DisplayName("대빵많은 더미데이터입니다")
-    //사용시에 application yaml파일을 수정해주세요
-    public void injectData(){
-
-        for(int i = 0; i< 100;i++){
-
-        }
-    }
-}

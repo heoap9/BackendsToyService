@@ -1,16 +1,19 @@
 package core.backendstudyToyService.domain.member.service;
 
 
+import core.backendstudyToyService.domain.member.dto.MemberDTO;
 import core.backendstudyToyService.domain.member.entitiy.Member;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface MemberService {
-    Member saveMember(Member member);
+    void saveMember(MemberDTO MemberDTO);
+
     Optional<Member> findMemberById(Long memberId);
     List<Member> findAllMembers();
     void deleteMember(Long memberId);
+    MemberDTO login(MemberDTO MemberDTO);
 
-    Optional<Member> findMemberByUsernameAndPassword(String username, String password);
+    boolean isUsernameAvailable(String username);
 }
