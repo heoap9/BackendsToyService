@@ -33,5 +33,6 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<Reply> replyList = new ArrayList<>();
 
+
 }
 

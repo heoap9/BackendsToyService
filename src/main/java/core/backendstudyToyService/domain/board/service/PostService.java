@@ -3,6 +3,8 @@ package core.backendstudyToyService.domain.board.service;
 import core.backendstudyToyService.domain.board.dto.PostDTO;
 import core.backendstudyToyService.domain.board.dto.PostDetailsDTO;
 import core.backendstudyToyService.domain.board.entity.Post;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -17,5 +19,5 @@ public interface PostService {
 
     void addCommentPost(Long postId, Long userId, String content);
 
-    void insertPost(PostDTO postDTO, List<MultipartFile> images);
+    void insertPost(UserDetails userDetails, PostDTO postDTO, List<MultipartFile> images);
 }

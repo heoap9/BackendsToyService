@@ -2,19 +2,19 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <title>Create New Post</title>
-    <link rel="stylesheet" href="/static/common.css">
+    <link rel="stylesheet" href="/static.css/common.css">
 </head>
 <body>
 <div class="container">
     <h1>Create New Post</h1>
     <!-- 게시글 작성 폼 -->
-    <form th:action="@{/posts}" th:object="${post}" method="post">
+    <form th:action="@{/posts/newPost}" th:object="${postDTO}" method="post">
         <!-- 제목 -->
         <div><label>Title: <input type="text" th:field="*{title}"/></label></div>
         <!-- 내용 -->
         <div><label>Content: <textarea th:field="*{content}"></textarea></label></div>
         <!-- 이미지 첨부 -->
-<!--        <div><input type="hidden" th:value="${imageBase64}" name="imageBase64"/></div>-->
+        <div class="inputBox"><h3>file :</h3> <input type="file" name="images" multiple> </div>
         <div><input type="submit" value="Submit"/></div>
     </form>
 </div>

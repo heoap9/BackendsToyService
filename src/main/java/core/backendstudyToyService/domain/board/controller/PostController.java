@@ -5,12 +5,16 @@ import core.backendstudyToyService.domain.board.dto.PostDTO;
 import core.backendstudyToyService.domain.board.dto.PostDetailsDTO;
 import core.backendstudyToyService.domain.board.service.PostService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -42,6 +46,7 @@ public class PostController {
     @GetMapping("/posts")
     public String getPostList(Model model){
         model.addAttribute("posts",postService.findAllPosts());
+        model.addAttribute("postDTO", new PostDTO()); // 새로운 게시글 작성을 위한 객체 추가
         return "post-list";
     }
 
@@ -72,15 +77,41 @@ public class PostController {
         return "redirect:/posts/"+postId;
     }//세션정보가 추가되면 파라미터에 추가해주세요!
 
+
+
+
+
+
+
+    // 글 작성 페이지 로드
+    @GetMapping("/posts/newPost")
+    public String getInsertPage(Model model) {
+        model.addAttribute("postDTO", new PostDTO());
+        return "newpost";
+    }
+
+
     /**
      * 게시글을 등록합니다
      * 텍스트가 기본이며, 이미지는 최대 3장 첨부 가능합니다.
      */
-    @PostMapping("/newPost")
-    public String insertPost(@ModelAttribute PostDTO postDTO, @RequestParam(required = false) MultipartFile[] images) throws IOException {
-        postService.insertPost(postDTO, List.of(images));
-
+    @PostMapping("/posts/newPost")
+    public String insertPost(@AuthenticationPrincipal UserDetails userDetails, @ModelAttribute PostDTO postDTO, @RequestParam(required = false) MultipartFile[] images) throws IOException {
         System.out.println("[PostController] insertPost 동작");
-        return "redirect:/posts/";
+        System.out.println("[PostController] PostDTO title: " + postDTO.getTitle());
+        System.out.println("[PostController] PostDTO content: " + postDTO.getContent());
+        System.out.println("[PostController] PostDTO uploadDate: " + postDTO.getUploadDate());
+        postDTO.setUploadDate(LocalDateTime.now());
+        if (images != null && images.length > 0) {
+            postService.insertPost(userDetails, postDTO, List.of(images));
+        } else {
+            System.out.println("[PostController] 사진 없을때 if문 통과...");
+            postService.insertPost(userDetails, postDTO, Collections.emptyList()); // 이미지가 없는 경우 빈 리스트를 전달합니다.
+            System.out.println("------------- [PostController] if문 통과 후 ------------");
+            System.out.println("[PostController] PostDTO title: " + postDTO.getTitle());
+            System.out.println("[PostController] PostDTO content: " + postDTO.getContent());
+            System.out.println("[PostController] PostDTO uploadDate: " + postDTO.getUploadDate());
+        }
+        return "redirect:/posts";
     }
 }

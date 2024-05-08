@@ -7,7 +7,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
       #어플리케이션 시점에 테이블 다지우고 jpa엔티티 정보로 생성함
     properties:
       hibernate:

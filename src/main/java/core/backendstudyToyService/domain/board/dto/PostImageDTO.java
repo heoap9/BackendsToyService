@@ -14,6 +14,8 @@ public class PostImageDTO {
 
     private String uuid;
 
+    private String fileType;
+
     private Long fileSize;
 
     private Long postId;
@@ -23,6 +25,7 @@ public class PostImageDTO {
                 .filePath(filePath)
                 .fileName(fileName)
                 .uuid(uuid)
+                .fileType(fileType)
                 .fileSize(fileSize)
                 .build();
     }
