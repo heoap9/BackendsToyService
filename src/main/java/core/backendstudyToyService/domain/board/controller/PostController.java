@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -93,24 +94,17 @@ public class PostController {
 
     /**
      * 게시글을 등록합니다
-     * 텍스트가 기본이며, 이미지는 최대 3장 첨부 가능합니다.
+     * 텍스트가 기본이며, 이미지는 선택사항
      */
     @PostMapping("/posts/newPost")
     public String insertPost(@AuthenticationPrincipal UserDetails userDetails, @ModelAttribute PostDTO postDTO, @RequestParam(required = false) MultipartFile[] images) throws IOException {
-        System.out.println("[PostController] insertPost 동작");
-        System.out.println("[PostController] PostDTO title: " + postDTO.getTitle());
-        System.out.println("[PostController] PostDTO content: " + postDTO.getContent());
-        System.out.println("[PostController] PostDTO uploadDate: " + postDTO.getUploadDate());
+
         postDTO.setUploadDate(LocalDateTime.now());
         if (images != null && images.length > 0) {
-            postService.insertPost(userDetails, postDTO, List.of(images));
+            postService.insertPost(userDetails, postDTO, Arrays.asList(images));
         } else {
             System.out.println("[PostController] 사진 없을때 if문 통과...");
-            postService.insertPost(userDetails, postDTO, Collections.emptyList()); // 이미지가 없는 경우 빈 리스트를 전달합니다.
-            System.out.println("------------- [PostController] if문 통과 후 ------------");
-            System.out.println("[PostController] PostDTO title: " + postDTO.getTitle());
-            System.out.println("[PostController] PostDTO content: " + postDTO.getContent());
-            System.out.println("[PostController] PostDTO uploadDate: " + postDTO.getUploadDate());
+            postService.insertPost(userDetails, postDTO, Collections.emptyList());
         }
         return "redirect:/posts";
     }

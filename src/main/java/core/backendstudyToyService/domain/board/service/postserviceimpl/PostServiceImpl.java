@@ -23,13 +23,13 @@ import org.springframework.web.multipart.MultipartFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -129,10 +129,8 @@ public class PostServiceImpl implements PostService {
 
         // 이미지 저장
         if (images != null && !images.isEmpty()) {
-            int maxImages = Math.min(images.size(), 3); // 이미지 최대 3개
-            for (int i = 0; i < maxImages; i++) {
-                MultipartFile image = images.get(i);
-                // 파일 경로 생성 및 저장
+            System.out.println("[PostServiceImpl] 이미지 저장 코드 통과...");
+            for(MultipartFile image: images){
                 imagePath = createImagePath(image);
                 System.out.println("[PostServiceImpl]이미지 저장경로 확인: " + imagePath);
                 // 이미지와 게시글 연결
@@ -152,7 +150,6 @@ public class PostServiceImpl implements PostService {
                 throw new IllegalArgumentException("이미지 파일이 아닙니다.");
             }
 
-            // 프로젝트 폴더 내 images폴더에 이미지 저장
             String uploadDirectory = "src/main/resources/images";
             Path uploadPath = Paths.get(imagePath);
 
@@ -173,9 +170,9 @@ public class PostServiceImpl implements PostService {
             // 파일 저장
             Files.copy(image.getInputStream(), path);
 
-            return "images/" + imageName;
+            return "images" + File.separator + imageName;
         } catch (IOException e) {
-            // 예외처리
+
             logger.error("Failed to save image: " + e.getMessage(), e);
 
             return null;
