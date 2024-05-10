@@ -32,17 +32,17 @@ public class PostController {
      * @return 게시글 번호를 등록하면 디테일폼으로 반환합니다
      */
     @GetMapping("/posts/{postId}")
-    public String getPostDetails(@PathVariable Long postId, Model model){
+    public String getPostDetails(@PathVariable Long postId, Model model) {
         try {
             PostDetailsDTO postDetailsDTO = postService.getPostDetails(postId);
-            //이미지 프로세싱은 보류
-            model.addAttribute("postDetails",postDetailsDTO);
+            model.addAttribute("postDetails", postDetailsDTO);
             return "post-details";
-        }catch (RuntimeException e){
-            model.addAttribute("에러!",e.getMessage());
-            return "error";
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage()); // "에러!"에서 "error"로 변경
+           return "error";
         }
     }
+
 
     @GetMapping("/posts")
     public String getPostList(Model model){

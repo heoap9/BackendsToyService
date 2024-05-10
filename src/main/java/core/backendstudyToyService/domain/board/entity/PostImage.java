@@ -43,4 +43,16 @@ public class PostImage {
         this.post = post;
 
     }
+
+    public void setImagePath(String imagePath) {
+        this.filePath = imagePath;
+    }
+
+    public String getImagePath(String dbStoredPath) {
+        if (dbStoredPath == null || dbStoredPath.isEmpty()) {
+            throw new IllegalArgumentException("데이터베이스에 저장된 이미지 경로가 유효하지 않습니다.");
+        }
+        return "/images/" + dbStoredPath;  // 웹 루트에 맞는 절대 경로로 변환
+    }
+
 }

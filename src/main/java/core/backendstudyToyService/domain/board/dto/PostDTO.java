@@ -3,6 +3,7 @@ package core.backendstudyToyService.domain.board.dto;
 import core.backendstudyToyService.domain.board.entity.PostImage;
 import core.backendstudyToyService.domain.member.entitiy.Member;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +21,6 @@ public class PostDTO {
     private LocalDateTime uploadDate;
     private LocalDateTime modifiedDate;
     private char isDeleted;
-    private List<PostImage> images;
+    private List<MultipartFile> images;
 
 }

@@ -65,11 +65,15 @@ public class PostServiceImpl implements PostService {
         String authorName = post.getMember().getUsername(); // 게시글 작성자의 이름
         int likeCount = post.getLikeCount(); // 좋아요 수
         List<CommentDTO> comments = post.getReplyList().stream()
-                .map(reply -> new CommentDTO(reply.getMember().getUsername(), reply.getContent())) // 댓글작성자와 내용을 한번에 표시해서 반환함
+                .map(reply -> new CommentDTO(reply.getMember().getUsername(), reply.getContent()))
+                .collect(Collectors.toList());
+        List<String> imageUrls = post.getImages().stream()  // 이미지 URL 로드
+                .map(PostImage::getFilePath)
                 .collect(Collectors.toList());
 
-        return new PostDetailsDTO(post.getId(), post.getTitle(), post.getContent(), authorName, likeCount, comments);
+        return new PostDetailsDTO(post.getId(), post.getTitle(), post.getContent(), authorName, likeCount, imageUrls, comments);
     }
+
 
     /**
      * 게시글좋아요를 반영할때 유저의 정보를 같이 넣어 등록합니다
@@ -189,10 +193,14 @@ public class PostServiceImpl implements PostService {
     private void saveImageToPost(Post post, String imagePath) {
 
         PostImage postImage = imageRepository.findByImagePath(imagePath);
-
+        if (postImage == null) {
+            // postImage가 null일 때의 처리 로직
+            // 예: 새 PostImage 객체를 생성하거나, 에러 메시지를 로깅
+            postImage = new PostImage();
+            postImage.setImagePath(imagePath);
+            // 필요하다면 다른 초기화 코드
+        }
         postImage.setPost(post);
-
-        // 이미지 저장
         imageRepository.save(postImage);
     }
 }

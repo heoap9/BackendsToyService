@@ -18,5 +18,7 @@ public class PostDetailsDTO {
     private String content;
     private String authorName;
     private int likeCount;
+    private List<String> imageUrls;
     private List<CommentDTO> comments;
+
 }
