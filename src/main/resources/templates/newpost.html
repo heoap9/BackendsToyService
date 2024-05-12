@@ -2,40 +2,31 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <title>Create New Post</title>
-    <link rel="stylesheet" href="/static.css/common.css">
+    <link rel="stylesheet" href="/static/css/common.css">
 </head>
 <body>
 <div class="container">
     <h1>Create New Post</h1>
     <!-- 게시글 작성 폼 -->
-    <form th:action="@{/posts/newPost}" th:object="${postDTO}" method="post">
+    <form th:action="@{/posts/newPost}" th:object="${postDTO}" method="post" enctype="multipart/form-data" id="postForm">
         <!-- 제목 -->
-        <div><label>Title: <input type="text" th:field="*{title}"/></label></div>
+        <div><label>Title: <input type="text" th:field="*{title}" id="titleInput"/></label></div>
         <!-- 내용 -->
-        <div><label>Content: <textarea th:field="*{content}"></textarea></label></div>
+        <div><label>Content: <textarea th:field="*{content}" id="contentInput"></textarea></label></div>
         <!-- 이미지 첨부 -->
-        <div class="inputBox"><h3>file :</h3> <input type="file" id="imageInput" name="images" multiple> </div>
-        <div><input type="submit" value="Submit"/></div>
+        <div class="inputBox"><h3>File:</h3> <input type="file" id="imageInput" name="images" multiple> </div>
+        <div><input type="button" value="Submit" id="submitButton"/></div>
     </form>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
-        $('#postForm').on('submit', function (event) {
+        $('#submitButton').on('click', function (event) {
+            event.preventDefault(); // 기본 제출 이벤트 방지
+
+            var formData = new FormData($('#postForm')[0]);
             var files = $('#imageInput')[0].files;
-
-            if (files.length === 0) {
-                return;
-            }
-
-            event.preventDefault(); // 이미지 있으면 폼 제출 방지
-
-            var formData = new FormData(this);
-
-            formData.append('title', $('#titleInput').val());
-            formData.append('content', $('#contentInput').val());
-
             for (var i = 0; i < files.length; i++) {
                 formData.append('images', files[i]);
             }
@@ -46,11 +37,8 @@
                 data: formData,
                 processData: false,
                 contentType: false,
-                enctype:'multipart/form-data',
                 success: function(response) {
                     console.log('게시물 등록 성공');
-                    console.log(response);
-
                     window.location.href = '/posts';
                 },
                 error: function(xhr, status, error) {

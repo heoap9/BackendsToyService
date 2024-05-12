@@ -39,7 +39,7 @@ public class PostController {
             model.addAttribute("postDetails",postDetailsDTO);
             return "post-details";
         }catch (RuntimeException e){
-            model.addAttribute("에러!",e.getMessage());
+            model.addAttribute("error",e.getMessage());
             return "error";
         }
     }
@@ -79,11 +79,6 @@ public class PostController {
     }//세션정보가 추가되면 파라미터에 추가해주세요!
 
 
-
-
-
-
-
     // 글 작성 페이지 로드
     @GetMapping("/posts/newPost")
     public String getInsertPage(Model model) {
@@ -103,9 +98,9 @@ public class PostController {
         if (images != null && images.length > 0) {
             postService.insertPost(userDetails, postDTO, Arrays.asList(images));
         } else {
-            System.out.println("[PostController] 사진 없을때 if문 통과...");
             postService.insertPost(userDetails, postDTO, Collections.emptyList());
         }
         return "redirect:/posts";
     }
+
 }

@@ -67,8 +67,10 @@ public class PostServiceImpl implements PostService {
         List<CommentDTO> comments = post.getReplyList().stream()
                 .map(reply -> new CommentDTO(reply.getMember().getUsername(), reply.getContent())) // 댓글작성자와 내용을 한번에 표시해서 반환함
                 .collect(Collectors.toList());
-
-        return new PostDetailsDTO(post.getId(), post.getTitle(), post.getContent(), authorName, likeCount, comments);
+        List<String> imageUrls = post.getImages().stream() // 이미지 url 업로드 
+                .map(PostImage::getFilePath)
+                .collect(Collectors.toList());
+        return new PostDetailsDTO(post.getId(), post.getTitle(), post.getContent(), authorName, likeCount, imageUrls, comments);
     }
 
     /**
