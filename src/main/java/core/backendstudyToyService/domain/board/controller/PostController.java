@@ -4,6 +4,7 @@ package core.backendstudyToyService.domain.board.controller;
 import core.backendstudyToyService.domain.board.dto.PostDTO;
 import core.backendstudyToyService.domain.board.dto.PostDetailsDTO;
 import core.backendstudyToyService.domain.board.service.PostService;
+import core.backendstudyToyService.domain.member.entitiy.CustomUserDetails;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -97,7 +98,7 @@ public class PostController {
      * 텍스트가 기본이며, 이미지는 선택사항
      */
     @PostMapping("/posts/newPost")
-    public String insertPost(@AuthenticationPrincipal UserDetails userDetails, @ModelAttribute PostDTO postDTO, @RequestParam(required = false) MultipartFile[] images) throws IOException {
+    public String insertPost(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute PostDTO postDTO, @RequestParam(required = false) MultipartFile[] images) throws IOException {
 
         postDTO.setUploadDate(LocalDateTime.now());
         if (images != null && images.length > 0) {

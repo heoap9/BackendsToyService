@@ -13,11 +13,13 @@ import core.backendstudyToyService.domain.board.repository.LikeRepository;
 import core.backendstudyToyService.domain.board.repository.PostRepository;
 import core.backendstudyToyService.domain.board.repository.ReplyRepository;
 import core.backendstudyToyService.domain.board.service.PostService;
+import core.backendstudyToyService.domain.member.entitiy.CustomUserDetails;
 import core.backendstudyToyService.domain.member.entitiy.Member;
 import core.backendstudyToyService.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.slf4j.Logger;
@@ -117,31 +119,29 @@ public class PostServiceImpl implements PostService {
     private String imagePath = "";
 
     @Override
-    public void insertPost(@AuthenticationPrincipal UserDetails userDetails, PostDTO postDTO, List<MultipartFile> images) {
-        // 멤버 아이디
-        String memberId = userDetails.getUsername();
-        System.out.println("[PostServiceImpl] 로그인된 멤버 아이디 확인: " + memberId);
+    public void insertPost(CustomUserDetails userDetails, PostDTO postDTO, List<MultipartFile> images) {
 
-        // 게시글 텍스트 설정 및 저장
+        // 로그인된 멤버의 ID로 Member 객체 조회
+        Member member = memberRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        // 게시글 설정
         Post post = new Post();
         post.setTitle(postDTO.getTitle());
+        post.setMember(member);
         post.setContent(postDTO.getContent());
         post.setUploadDate(LocalDateTime.now());
-
-        // 게시글 저장(텍스트, 업로드 날짜 등 추가정보 포함)
         Post savedPost = postRepository.save(post);
 
-        // 이미지 저장
+        // 이미지 처리
         if (images != null && !images.isEmpty()) {
-            System.out.println("[PostServiceImpl] 이미지 저장 코드 통과...");
             for(MultipartFile image: images){
-                imagePath = createImagePath(image);
-                System.out.println("[PostServiceImpl]이미지 저장경로 확인: " + imagePath);
-                // 이미지와 게시글 연결
+                String imagePath = createImagePath(image);
                 saveImageToPost(savedPost, imagePath);
             }
         }
     }
+
 
 
     private String createImagePath(MultipartFile image) {
