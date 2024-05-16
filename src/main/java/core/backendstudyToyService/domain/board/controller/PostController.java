@@ -7,7 +7,6 @@ import core.backendstudyToyService.domain.board.service.PostService;
 import core.backendstudyToyService.domain.member.entitiy.CustomUserDetails;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +16,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 @Controller
 @AllArgsConstructor//현재 구현체가 하나이므로 생성자 주입을 사용했습니다
