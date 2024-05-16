@@ -21,6 +21,6 @@ public class PostDTO {
     private LocalDateTime uploadDate;
     private LocalDateTime modifiedDate;
     private char isDeleted;
-    private List<MultipartFile> images;
+    private List<PostImage> images;
 
 }

@@ -17,8 +17,6 @@ import core.backendstudyToyService.domain.member.entitiy.CustomUserDetails;
 import core.backendstudyToyService.domain.member.entitiy.Member;
 import core.backendstudyToyService.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -64,17 +62,18 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("찾는 게시글이 없습니다: " + postId + "번호"));
 
-        String authorName = post.getMember().getUsername(); // 게시글 작성자의 이름
-        int likeCount = post.getLikeCount(); // 좋아요 수
+        String authorName = post.getMember().getUsername();
+        int likeCount = post.getLikeCount();
         List<CommentDTO> comments = post.getReplyList().stream()
                 .map(reply -> new CommentDTO(reply.getMember().getUsername(), reply.getContent()))
                 .collect(Collectors.toList());
-        List<String> imageUrls = post.getImages().stream()  // 이미지 URL 로드
+        List<String> imageUrls = post.getImages().stream()
                 .map(PostImage::getFilePath)
                 .collect(Collectors.toList());
 
         return new PostDetailsDTO(post.getId(), post.getTitle(), post.getContent(), authorName, likeCount, imageUrls, comments);
     }
+
 
 
     /**
@@ -116,8 +115,6 @@ public class PostServiceImpl implements PostService {
         replyRepository.save(reply);
     }
 
-    private String imagePath = "";
-
     @Override
     public void insertPost(CustomUserDetails userDetails, PostDTO postDTO, List<MultipartFile> images) {
 
@@ -154,8 +151,9 @@ public class PostServiceImpl implements PostService {
                 throw new IllegalArgumentException("이미지 파일이 아닙니다.");
             }
 
-            String uploadDirectory = "src/main/resources/images";
-            Path uploadPath = Paths.get(imagePath);
+            //이미지 저장경로를 개발 소스 경로에 임시로 저장하기 위한 용도로 사용됨
+            String uploadDirectory = "src/main/resources/static/images";
+            Path uploadPath = Paths.get(uploadDirectory);
 
             // 경로 없으면 생성
             if (!Files.exists(uploadPath)) {

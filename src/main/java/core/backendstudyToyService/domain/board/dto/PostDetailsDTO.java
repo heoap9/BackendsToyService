@@ -1,19 +1,14 @@
 package core.backendstudyToyService.domain.board.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
 
-
-/**
- * 게시글의 디테일한 정보를 저장하기 위한 계층으로 사용됩니다
- */
-@Getter@Setter
-@AllArgsConstructor
+@Getter
+@Setter
 public class PostDetailsDTO {
-    private Long postId;
+    private Long id;
     private String title;
     private String content;
     private String authorName;
@@ -21,4 +16,15 @@ public class PostDetailsDTO {
     private List<String> imageUrls;
     private List<CommentDTO> comments;
 
+    // 기존 생성자 및 getter, setter 메소드
+
+    public PostDetailsDTO(Long id, String title, String content, String authorName, int likeCount, List<String> imageUrls, List<CommentDTO> comments) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.authorName = authorName;
+        this.likeCount = likeCount;
+        this.imageUrls = imageUrls;
+        this.comments = comments;
+    }
 }
