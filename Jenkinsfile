@@ -7,17 +7,17 @@ pipeline {
 
     environment {
         // 환경 변수 설정
-        REMOTE_USER = 'your-remote-username'
-        REMOTE_HOST = 'your-remote-host'
-        REMOTE_PATH = '/path/to/deploy'
-        SSH_KEY = 'your-ssh-key-credentials-id'
+        REMOTE_USER = 'master'
+        REMOTE_HOST = '192.168.0.15'
+        REMOTE_PATH = '/Jenkinsfile'
+//         SSH_KEY = 'your-ssh-key-credentials-id'
     }
 
     stages {
         stage('Checkout') {
             steps {
                 // Git 리포지토리에서 소스 코드 체크아웃
-                git 'https://github.com/your-repo/your-spring-app.git'
+                git 'https://github.com/heoap9/BackendsToyService'
             }
         }
 
