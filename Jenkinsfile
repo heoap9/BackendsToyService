@@ -18,7 +18,18 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Git 리포지토리에서 소스 코드 체크아웃
-                git 'https://github.com/heoap9/BackendsToyService'
+                git
+                    branch: 'master',
+                    url: 'https://github.com/heoap9/BackendsToyService'
+            }
+
+            post {
+                success {
+                    sh 'echo "Success clone Repo"'
+                    }
+                failure {
+                    sh 'echo "fail..clone"'
+                    }
             }
         }
 
@@ -27,12 +38,21 @@ pipeline {
                 // Gradle을 사용하여 프로젝트 빌드
                 sh './gradlew clean build'
             }
+
+            post {
+                            success {
+                                sh 'echo "Success build "'
+                                }
+                            failure {
+                                sh 'echo "fail..build"'
+                                }
+                        }
         }
 
         stage('Deploy') {
                     steps {
                         // 빌드된 JAR 파일을 원격 서버로 전송
-                        sshagent(credentials: SSH_KEY) {
+                        sshagent(credentials: [env.SSH_KEY]) {
                             sh """
                             scp build/libs/${env.JAR_NAME} ${env.REMOTE_USER}@${env.REMOTE_HOST}:${env.REMOTE_DIR}
                             ssh ${env.REMOTE_USER}@${env.REMOTE_HOST} 'bash -s' <<'ENDSSH'
@@ -45,6 +65,19 @@ pipeline {
                     }
         }
     }
+
+    stage('Health Check') {
+                steps {
+                    script {
+                        def response = httpRequest url: 'http://192.168.0.15:8080/health', validResponseCodes: '200'
+                        if (response.status != 200) {
+                            error "Health check failed with status: ${response.status}"
+                        }
+                    }
+                }
+            }
+        }
+
 
     post {
         always {
