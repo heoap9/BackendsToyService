@@ -7,10 +7,10 @@ pipeline {
 
     environment {
         // 환경 변수 설정
-        REMOTE_USER = 'master'
+        REMOTE_USER = 'root'
         REMOTE_HOST = '192.168.0.15'
         REMOTE_PATH = '/Jenkinsfile'
-//         SSH_KEY = 'your-ssh-key-credentials-id'
+        SSH_KEY = 'root@192.168.0.15'
     }
 
     stages {
