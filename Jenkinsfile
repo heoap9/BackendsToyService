@@ -18,9 +18,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Git 리포지토리에서 소스 코드 체크아웃
-                git
-                    branch: 'master',
-                    url: 'https://github.com/heoap9/BackendsToyService'
+                git branch: 'master', url: 'https://github.com/heoap9/BackendsToyService'
             }
 
             post {
@@ -69,7 +67,7 @@ pipeline {
     stage('Health Check') {
                 steps {
                     script {
-                        def response = httpRequest url: 'http://192.168.0.15:8080/health', validResponseCodes: '200'
+                        def response = httpRequest url: 'http://192.168.0.15:8200/health', validResponseCodes: '200'
                         if (response.status != 200) {
                             error "Health check failed with status: ${response.status}"
                         }
