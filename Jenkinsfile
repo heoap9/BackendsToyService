@@ -10,7 +10,7 @@ pipeline {
         REMOTE_USER = 'master'
         REMOTE_HOST = '192.168.0.15'
         REMOTE_PATH = '/Jenkinsfile'
-//         SSH_KEY = 'your-ssh-key-credentials-id'
+        SSH_KEY = 'github_Token'
     }
 
     stages {
@@ -20,6 +20,11 @@ pipeline {
                 git 'https://github.com/heoap9/BackendsToyService'
             }
         }
+
+        stage('Test') {
+                    steps {
+                        echo 'Testing..'
+                    }
 
         stage('Build') {
             steps {
