@@ -10,7 +10,7 @@ pipeline {
         REMOTE_USER = 'root'
         REMOTE_HOST = '192.168.0.15'
         REMOTE_DIR = '/root/spring-app'
-        SSH_KEY = 'github_Token'
+        SSH_CREDENTIALS_ID = 'jenkins'
         JAR_NAME = 'spring.jar'
     }
 
@@ -48,13 +48,13 @@ pipeline {
         stage('Deploy') {
             steps {
                 // 빌드된 JAR 파일을 원격 서버로 전송
-                sshagent(credentials: [env.SSH_KEY]) {
+                sshagent(credentials: [SSH_CREDENTIALS_ID]) {
                     sh """
-                    scp build/libs/${env.JAR_NAME} ${env.REMOTE_USER}@${env.REMOTE_HOST}:${env.REMOTE_DIR}
-                    ssh ${env.REMOTE_USER}@${env.REMOTE_HOST} 'bash -s' <<'ENDSSH'
+                    scp build/libs/${JAR_NAME} ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}
+                    ssh ${REMOTE_USER}@${REMOTE_HOST} 'bash -s' <<'ENDSSH'
                     # 서버에서 기존 프로세스를 종료하고 새 JAR 파일로 애플리케이션을 시작
-                    pkill -f 'java -jar ${env.REMOTE_DIR}/${env.JAR_NAME}' || true
-                    nohup $JAVA_HOME/bin/java -jar ${env.REMOTE_DIR}/${env.JAR_NAME} > /dev/null 2>&1 &
+                    pkill -f 'java -jar ${REMOTE_DIR}/${JAR_NAME}' || true
+                    nohup $JAVA_HOME/bin/java -jar ${REMOTE_DIR}/${JAR_NAME} > /dev/null 2>&1 &
                     ENDSSH
                     """
                 }
@@ -72,7 +72,7 @@ pipeline {
         stage('Health Check') {
             steps {
                 script {
-                    def response = httpRequest url: 'http://192.168.0.15:8200/health', validResponseCodes: '200'
+                    def response = httpRequest url: 'http://192.168.0.14:8200/health', validResponseCodes: '200'
                     if (response.status != 200) {
                         error "Health check failed with status: ${response.status}"
                     } else {
