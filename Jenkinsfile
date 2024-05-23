@@ -1,6 +1,5 @@
 pipeline {
     agent any
-
     tools {
         jdk 'JDK 17' // Jenkins에서 설정한 JDK 이름
     }
@@ -52,8 +51,8 @@ pipeline {
                 sshagent(credentials: [SSH_CREDENTIALS_ID]) {
                     sh """
                     scp build/libs/${JAR_NAME} ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}
-                    # ssh ${REMOTE_USER}@${REMOTE_HOST} 'bash -s' <<'ENDSSH'
-                     서버에서 기존 프로세스를 종료하고 새 JAR 파일로 애플리케이션을 시작
+                    ssh ${REMOTE_USER}@${REMOTE_HOST} 'bash -s' <./deploy_script.sh
+                    # 서버에서 기존 프로세스를 종료하고 새 JAR 파일로 애플리케이션을 시작
                     pkill -f 'java -jar ${REMOTE_DIR}/${JAR_NAME}' || true
                     nohup $JAVA_HOME/bin/java -jar ${REMOTE_DIR}/${JAR_NAME} > /dev/null 2>&1 &
                     ENDSSH
