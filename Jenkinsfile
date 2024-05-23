@@ -33,6 +33,8 @@ pipeline {
         stage('Build') {
             steps {
                 // Gradle을 사용하여 프로젝트 빌드
+                                sh 'chmod +x ./gradlew'
+                                sh './gradlew build'
                 sh './gradlew clean build'
             }
             post {
