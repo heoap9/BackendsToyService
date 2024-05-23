@@ -15,12 +15,6 @@ pipeline {
     }
 
 
-    stage('github-clone') {
-        steps {
-            git branch: 'master', credentialsId: 'github_Token', url: 'https://github.com/heoap9/BackendsToyService'
-        }
-    }
-
     stages {
         stage('Checkout') {
             steps {
