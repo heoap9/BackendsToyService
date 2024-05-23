@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-        jdk 'JDK 17' // Jenkins에서 설정한 JDK 이름
+        jdk 'jdk 17' // Jenkins에서 설정한 JDK 이름
     }
 
     environment {
