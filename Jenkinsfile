@@ -10,7 +10,7 @@ pipeline {
         REMOTE_HOST = '192.168.0.15'
         REMOTE_DIR = '/root/spring-app'
         SSH_CREDENTIALS_ID = 'jenkins'
-        JAR_NAME = 'spring.jar' // JAR 파일 이름 (빌드 후 확인할 것)
+        JAR_NAME = 'BackendsService-0.0.1-SNAPSHOT.jar' // JAR 파일 이름 (빌드 후 확인할 것)
     }
 
     stages {
