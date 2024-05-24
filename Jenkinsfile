@@ -10,7 +10,7 @@ pipeline {
         REMOTE_HOST = '192.168.0.15'
         REMOTE_DIR = '/root/spring-app'
         SSH_CREDENTIALS_ID = 'jenkins'
-        JAR_NAME = 'spring.jar'
+        JAR_NAME = 'spring.jar' // JAR 파일 이름 (빌드 후 확인할 것)
     }
 
     stages {
@@ -39,6 +39,8 @@ pipeline {
             post {
                 success {
                     sh 'echo "Success build"'
+                    // 빌드된 파일 목록 확인
+                    sh 'ls -l build/libs/'
                 }
                 failure {
                     sh 'echo "Fail build"'
