@@ -52,7 +52,7 @@ pipeline {
                 // 빌드된 JAR 파일을 원격 서버로 전송
                 sshagent(credentials: [SSH_CREDENTIALS_ID]) {
                     sh """
-                    ssh-keyscan -H ${REMOTE_HOST} >> ~/.ssh/known_hosts
+
                     ssh -o StrictHostKeyChecking=no ${REMOTE_HOST} "pwd"
                     ssh -o StrictHostKeyChecking=no root@192.168.0.15 "pwd"
 
