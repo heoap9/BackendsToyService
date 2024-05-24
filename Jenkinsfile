@@ -10,7 +10,7 @@ pipeline {
         REMOTE_HOST = '192.168.0.15'
         REMOTE_DIR = '/root/spring-app'
         SSH_CREDENTIALS_ID = 'jenkins'
-        JAR_NAME = 'BackendsService-0.0.1-SNAPSHOT.jar' // JAR 파일 이름 (빌드 후 확인할 것)
+        JAR_NAME = 'BackendsService-0.0.1-SNAPSHOT.jar' // 수정된 JAR 파일 이름
     }
 
     stages {
@@ -55,11 +55,11 @@ pipeline {
                     sh """
                     ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "pwd"
                     scp -o StrictHostKeyChecking=no build/libs/${JAR_NAME} ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}
-                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} << 'EOF'
-                        # 서버에서 기존 프로세스를 종료하고 새 JAR 파일로 애플리케이션을 시작
-                        pkill -f 'java -jar ${REMOTE_DIR}/${JAR_NAME}' || true
-                        nohup $JAVA_HOME/bin/java -jar ${REMOTE_DIR}/${JAR_NAME} > /dev/null 2>&1 &
-                    EOF
+                    """
+                    // 원격 서버에서 기존 프로세스를 종료하고 새 JAR 파일로 애플리케이션을 시작
+                    sh """
+                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "pkill -f 'java -jar ${REMOTE_DIR}/${JAR_NAME}' || true"
+                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "nohup $JAVA_HOME/bin/java -jar ${REMOTE_DIR}/${JAR_NAME} > /dev/null 2>&1 &"
                     """
                 }
             }
