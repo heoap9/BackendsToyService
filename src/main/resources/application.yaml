@@ -21,7 +21,8 @@ spring:
       #어플리케이션 시점에 테이블 다지우고 jpa엔티티 정보로 생성함
     properties:
       hibernate:
-#        show_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
         #프린트로 찍음
         format_sql: true
   web:
