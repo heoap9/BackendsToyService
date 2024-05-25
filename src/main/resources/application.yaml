@@ -5,10 +5,10 @@ spring:
 #    password:
 #    driver-class-name: org.h2.Driver
 
+    driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://192.168.0.16:3306/test
     username: root
     password:
-    driver-class-name: com.mysql.cj.jdbc.Driver
 
   servlet:
     multipart:
@@ -16,15 +16,18 @@ spring:
       max-request-size: 20MB
 
   jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show_sql: true
+
     hibernate:
       ddl-auto: update
       #어플리케이션 시점에 테이블 다지우고 jpa엔티티 정보로 생성함
     properties:
       hibernate:
-        show_sql: true
-        dialect: org.hibernate.dialect.MySQL8Dialect
         #프린트로 찍음
         format_sql: true
+
   web:
     resources:
       static-locations: classpath:/static/
