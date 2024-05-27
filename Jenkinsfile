@@ -51,16 +51,12 @@ pipeline {
         stage('Deploy') {
             steps {
                 // 빌드된 JAR 파일을 원격 서버로 전송
-                sshagent(credentials: [SSH_CREDENTIALS_ID]) {
-                    sh """
-                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "pwd"
-                    scp -o StrictHostKeyChecking=no build/libs/${JAR_NAME} ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}
-                    """
-                    // 원격 서버에서 기존 프로세스를 종료하고 새 JAR 파일로 애플리케이션을 시작
-                    sh """
-                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "pkill -f 'java -jar ${REMOTE_DIR}/${JAR_NAME}' || true"
-                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "nohup $JAVA_HOME/bin/java -jar ${REMOTE_DIR}/${JAR_NAME} > /dev/null 2>&1 &"
-                    """
+                sshagent(credentials: ['jenkins']) {
+                    sh 'ssh -o StrictHostKeyChecking=no root@192.168.0.15 "pwd; ls -l /root/spring-app"'
+                    sh 'scp -o StrictHostKeyChecking=no build/libs/BackendsService-0.0.1-SNAPSHOT.jar root@192.168.0.15:/root/spring-app'
+                    sh 'ssh -o StrictHostKeyChecking=no root@192.168.0.15 pkill -f \'java -jar /root/spring-app/BackendsService-0.0.1-SNAPSHOT.jar\' || true'
+                    // 새로운 JAR 파일 실행 명령어 추가
+                    sh 'ssh -o StrictHostKeyChecking=no root@192.168.0.15 "nohup java -jar /root/spring-app/BackendsService-0.0.1-SNAPSHOT.jar > /root/spring-app/app.log 2>&1 &"'
                 }
             }
             post {
