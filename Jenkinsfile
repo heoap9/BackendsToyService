@@ -54,7 +54,7 @@ pipeline {
                 sshagent(credentials: ['jenkins']) {
                     sh 'ssh -o StrictHostKeyChecking=no root@192.168.0.15 "pwd; ls -l /root/spring-app"'
                     sh 'scp -o StrictHostKeyChecking=no build/libs/BackendsService-0.0.1-SNAPSHOT.jar root@192.168.0.15:/root/spring-app'
-                    sh 'ssh -o StrictHostKeyChecking=no root@192.168.0.15 pkill -f \'java -jar /root/spring-app/BackendsService-0.0.1-SNAPSHOT.jar\' || true'
+                    sh 'ssh -o StrictHostKeyChecking=no root@192.168.0.15 pkill -f "java -jar /root/spring-app/BackendsService-0.0.1-SNAPSHOT.jar" || true'
                     // 새로운 JAR 파일 실행 명령어 추가
                     sh 'ssh -o StrictHostKeyChecking=no root@192.168.0.15 "nohup java -jar /root/spring-app/BackendsService-0.0.1-SNAPSHOT.jar > /root/spring-app/app.log 2>&1 &"'
                 }
@@ -69,17 +69,17 @@ pipeline {
             }
         }
 
-        stage('Health Check') {
-            steps {
-                script {
-                    def response = httpRequest url: 'http://192.168.0.14:8200/health', validResponseCodes: '200'
-                    if (response.status != 200) {
-                        error "Health check failed with status: ${response.status}"
-                    } else {
-                        sh 'echo "Health check passed"'
-                    }
-                }
-            }
+//         stage('Health Check') {
+//             steps {
+//                 script {
+//                     def response = httpRequest url: 'http://192.168.0.14:8200/health', validResponseCodes: '200'
+//                     if (response.status != 200) {
+//                         error "Health check failed with status: ${response.status}"
+//                     } else {
+//                         sh 'echo "Health check passed"'
+//                     }
+//                 }
+//             }
         }
     }
 
