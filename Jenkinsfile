@@ -10,7 +10,7 @@ pipeline {
         REMOTE_HOST = '192.168.0.15'
         REMOTE_DIR = '/root/spring-app'
         SSH_CREDENTIALS_ID = 'jenkins'
-        JAR_NAME = 'BackendsService-0.0.1-SNAPSHOT.jar' // 수정된 JAR 파일 이름
+        JAR_NAME = 'BackendsService-0.0.1-SNAPSHOT.jar'
     }
 
     stages {
@@ -33,7 +33,6 @@ pipeline {
             steps {
                 // Gradle을 사용하여 프로젝트 빌드
                 sh 'chmod +x ./gradlew'
-                sh './gradlew build'
                 sh './gradlew clean build'
             }
             post {
@@ -51,12 +50,12 @@ pipeline {
         stage('Deploy') {
             steps {
                 // 빌드된 JAR 파일을 원격 서버로 전송
-                sshagent(credentials: ['jenkins']) {
-                    sh 'ssh -o StrictHostKeyChecking=no root@192.168.0.15 "pwd; ls -l /root/spring-app"'
-                    sh 'scp -o StrictHostKeyChecking=no build/libs/BackendsService-0.0.1-SNAPSHOT.jar root@192.168.0.15:/root/spring-app'
-                    sh 'ssh -o StrictHostKeyChecking=no root@192.168.0.15 pkill -f "java -jar /root/spring-app/BackendsService-0.0.1-SNAPSHOT.jar" || true'
+                sshagent(credentials: [SSH_CREDENTIALS_ID]) {
+                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "pwd; ls -l ${REMOTE_DIR}"'
+                    sh 'scp -o StrictHostKeyChecking=no build/libs/${JAR_NAME} ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}'
+                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} pkill -f "java -jar ${REMOTE_DIR}/${JAR_NAME}" || true'
                     // 새로운 JAR 파일 실행 명령어 추가
-                    sh 'ssh -o StrictHostKeyChecking=no root@192.168.0.15 "nohup java -jar /root/spring-app/BackendsService-0.0.1-SNAPSHOT.jar > /root/spring-app/app.log 2>&1 &"'
+                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "nohup java -jar ${REMOTE_DIR}/${JAR_NAME} > ${REMOTE_DIR}/app.log 2>&1 &"'
                 }
             }
             post {
@@ -67,19 +66,6 @@ pipeline {
                     sh 'echo "Fail deploy"'
                 }
             }
-        }
-
-//         stage('Health Check') {
-//             steps {
-//                 script {
-//                     def response = httpRequest url: 'http://192.168.0.14:8200/health', validResponseCodes: '200'
-//                     if (response.status != 200) {
-//                         error "Health check failed with status: ${response.status}"
-//                     } else {
-//                         sh 'echo "Health check passed"'
-//                     }
-//                 }
-//             }
         }
     }
 
