@@ -1,12 +1,12 @@
 spring:
   datasource:
-#    url: jdbc:h2:tcp://localhost/~/jpashop
+#    url: jdbc:h2:tcp://localhost/~/test
 #    username: sa
 #    password:
 #    driver-class-name: org.h2.Driver
 
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.0.16:3306/test
+    url: jdbc:mysql://59.8.166.205:8400/test
     username: Backend
     password: redshiproot
 
@@ -21,7 +21,7 @@ spring:
     show_sql: true
 
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
       #어플리케이션 시점에 테이블 다지우고 jpa엔티티 정보로 생성함
     properties:
       hibernate:

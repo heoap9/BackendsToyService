@@ -12,7 +12,7 @@ public class PostImageDTO {
 
     private String fileName;
 
-    private String uuid;
+    private String fileUuid;
 
     private String fileType;
 
@@ -24,7 +24,7 @@ public class PostImageDTO {
         return PostImage.builder()
                 .filePath(filePath)
                 .fileName(fileName)
-                .uuid(uuid)
+                .fileUuid(fileUuid)
                 .fileType(fileType)
                 .fileSize(fileSize)
                 .build();
