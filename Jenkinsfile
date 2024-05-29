@@ -39,7 +39,7 @@ pipeline {
                 success {
                     sh 'echo "Success build"'
                     // 빌드된 파일 목록 확인
-                    sh 'ls -l build/libs/'
+                    sh 'ls -l build/'
                 }
                 failure {
                     sh 'echo "Fail build"'
@@ -49,13 +49,14 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                // 빌드된 JAR 파일을 원격 서버로 전송
+                // 빌드된 전체 build 폴더를 원격 서버로 전송
                 sshagent(credentials: [SSH_CREDENTIALS_ID]) {
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "pwd; ls -l ${REMOTE_DIR}"'
-                    sh 'scp -o StrictHostKeyChecking=no build/libs/${JAR_NAME} ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}'
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} pkill -f "java -jar ${REMOTE_DIR}/${JAR_NAME}" || true'
-                    // 새로운 JAR 파일 실행 명령어 추가
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "nohup java -jar ${REMOTE_DIR}/${JAR_NAME} > ${REMOTE_DIR}/app.log 2>&1 &"'
+                    // 원격 서버에 빌드 폴더 전송
+                    sh 'scp -o StrictHostKeyChecking=no -r build ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}'
+
+                    // 원격 서버에서 기존 프로세스를 종료하고 새 JAR 파일로 애플리케이션을 시작
+                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "pkill -f \'java -jar ${REMOTE_DIR}/build/libs/${JAR_NAME}\' || true"'
+                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "nohup java -jar ${REMOTE_DIR}/build/libs/${JAR_NAME} > ${REMOTE_DIR}/app.log 2>&1 &"'
                 }
             }
             post {
@@ -63,7 +64,11 @@ pipeline {
                     sh 'echo "Success deploy"'
                 }
                 failure {
-                    sh 'echo "Fail deploy"'
+                    script {
+                        echo "Fail deploy"
+                        // 디버깅 정보를 출력하기 위해 원격 서버에서 로그 파일 출력
+                        sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "tail -n 100 ${REMOTE_DIR}/app.log"'
+                    }
                 }
             }
         }
