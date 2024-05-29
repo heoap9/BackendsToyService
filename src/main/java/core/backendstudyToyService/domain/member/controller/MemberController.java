@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class MemberController {
 
     private final MemberService memberService;
-    private final HttpSession httpSession;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -26,10 +25,8 @@ public class MemberController {
 
 
     @Autowired
-    public MemberController(MemberService memberService, HttpSession httpSession) {
+    public MemberController(MemberService memberService) {
         this.memberService = memberService;
-        this.httpSession = httpSession;
-
     }
 
     @GetMapping("/signup")

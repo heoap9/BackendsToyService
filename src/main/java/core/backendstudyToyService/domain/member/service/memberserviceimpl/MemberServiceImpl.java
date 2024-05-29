@@ -50,7 +50,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void deleteMember(Long memberId) {
+    public void deleteMember(Long id) {
 
     }
 
