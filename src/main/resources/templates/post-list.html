@@ -17,9 +17,9 @@
     <a th:href="@{/posts/newPost}" class="btn">Create New Post</a>
     <!-- 회원 탈퇴 링크 -->
     <div class="user-menu">
-        <ul>
-            <li><a th:href="@{/delete}">회원 탈퇴</a></li>
-        </ul>
+        <form th:action="@{/delete}" method="post">
+            <button type="submit">회원 탈퇴</button>
+        </form>
     </div>
     <ul>
         <li th:each="post : ${posts}">

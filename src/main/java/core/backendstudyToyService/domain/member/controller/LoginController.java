@@ -40,6 +40,7 @@ public class LoginController {
 
     @PostMapping("/delete")
     public String deleteMember(Principal principal) {
+        System.out.println(principal);
         String username = principal.getName();
         memberService.deleteMember(username);
         return "redirect:/login";
