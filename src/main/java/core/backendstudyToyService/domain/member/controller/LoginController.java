@@ -34,14 +34,10 @@ public class LoginController {
         return "/posts";// postContorller 참조
     }
 
-    @GetMapping("/logout")
-    public String logout(HttpServletRequest request, HttpServletResponse response) throws Exception{
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication != null) {
-            new SecurityContextLogoutHandler().logout(request, response, authentication);
-        }
-
-        return "redirect:/";
+    @PostMapping("/delete")
+    public String deleteMember(Principal principal) {
+        String username = principal.getName();
+        memberService.deleteMember(username);
+        return "redirect:/login";
     }
 }
