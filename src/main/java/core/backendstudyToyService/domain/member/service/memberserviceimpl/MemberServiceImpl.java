@@ -50,8 +50,12 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void deleteMember(Long id) {
-
+    public void deleteMember(String username) {
+        Optional<Member> memberOptional = memberRepository.findByUsername(username);
+        if (memberOptional.isPresent()) {
+            Member member = memberOptional.get();
+            memberRepository.delete(member);
+        }
     }
 
 
