@@ -1,17 +1,64 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <title>Create New Post</title>
-    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/static.css/common.css">
 </head>
 <body>
 <div class="container">
     <h1>Create New Post</h1>
-    <form th:action="@{/posts}" th:object="${post}" method="post">
-        <div><label>Title: <input type="text" th:field="*{title}"/></label></div>
-        <div><label>Content: <textarea th:field="*{content}"></textarea></label></div>
+    <!-- 게시글 작성 폼 -->
+    <form id="postForm" th:action="@{/posts/newPost}" th:object="${postDTO}" method="post" enctype="multipart/form-data">
+        <!-- 제목 -->
+        <div><label>Title: <input type="text" id="titleInput" th:field="*{title}"/></label></div>
+        <!-- 내용 -->
+        <div><label>Content: <textarea id="contentInput" th:field="*{content}"></textarea></label></div>
+        <!-- 이미지 첨부 -->
+        <div class="inputBox"><h3>File :</h3> <input type="file" id="imageInput" name="images" multiple> </div>
         <div><input type="submit" value="Submit"/></div>
     </form>
 </div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#postForm').on('submit', function (event) {
+            var files = $('#imageInput')[0].files;
+
+            if (files.length === 0) {
+                return;
+            }
+
+            event.preventDefault(); // 이미지가 있으면 폼 제출 방지
+
+            var formData = new FormData(this);
+
+            formData.append('title', $('#titleInput').val());
+            formData.append('content', $('#contentInput').val());
+
+            for (var i = 0; i < files.length; i++) {
+                formData.append('images', files[i]);
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '/posts/newPost',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    console.log('게시물 등록 성공');
+                    console.log(response);
+
+                    window.location.href = '/posts';
+                },
+                error: function(xhr, status, error) {
+                    console.error('게시물 등록 실패');
+                    alert("Error: " + xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>

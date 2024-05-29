@@ -1,30 +1,46 @@
 package core.backendstudyToyService.domain.board.service.postserviceimpl;
 
 import core.backendstudyToyService.domain.board.dto.CommentDTO;
+import core.backendstudyToyService.domain.board.dto.PostDTO;
 import core.backendstudyToyService.domain.board.dto.PostDetailsDTO;
 import core.backendstudyToyService.domain.board.entity.Like;
 import core.backendstudyToyService.domain.board.entity.Post;
+import core.backendstudyToyService.domain.board.entity.PostImage;
 import core.backendstudyToyService.domain.board.entity.Reply;
 import core.backendstudyToyService.domain.board.exeption.EntityNotFoundException;
+import core.backendstudyToyService.domain.board.repository.ImageRepository;
 import core.backendstudyToyService.domain.board.repository.LikeRepository;
 import core.backendstudyToyService.domain.board.repository.PostRepository;
 import core.backendstudyToyService.domain.board.repository.ReplyRepository;
 import core.backendstudyToyService.domain.board.service.PostService;
+import core.backendstudyToyService.domain.member.entitiy.CustomUserDetails;
 import core.backendstudyToyService.domain.member.entitiy.Member;
 import core.backendstudyToyService.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
 @Service
 @RequiredArgsConstructor
-public class PostServiceImpl implements PostService{
+public class PostServiceImpl implements PostService {
 
+    private static final Logger logger = LoggerFactory.getLogger(PostServiceImpl.class);
     private final PostRepository postRepository;
+    private final ImageRepository imageRepository;
     private final MemberRepository memberRepository;
     private final LikeRepository likeRepository;
     private final ReplyRepository replyRepository;
@@ -37,35 +53,41 @@ public class PostServiceImpl implements PostService{
      */
 
     @Override
-    public List<Post> findAllPosts(){ // 페이징을 기능구현 보류
+    public List<Post> findAllPosts() { // 페이징을 기능구현 보류
         return postRepository.findAll();
     }
 
     @Override
     public PostDetailsDTO getPostDetails(Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new EntityNotFoundException("찾는 게시글이 없습니다: " + postId +"번호"));
+                .orElseThrow(() -> new EntityNotFoundException("찾는 게시글이 없습니다: " + postId + "번호"));
 
-        String authorName = post.getMember().getUsername(); // 게시글 작성자의 이름
-        int likeCount = post.getLikeCount(); // 좋아요 수
+        String authorName = post.getMember().getUsername();
+        int likeCount = post.getLikeCount();
         List<CommentDTO> comments = post.getReplyList().stream()
-                .map(reply -> new CommentDTO(reply.getMember().getUsername(), reply.getContent())) // 댓글작성자와 내용을 한번에 표시해서 반환함
+                .map(reply -> new CommentDTO(reply.getMember().getUsername(), reply.getContent()))
+                .collect(Collectors.toList());
+        List<String> imageUrls = post.getImages().stream()
+                .map(PostImage::getFilePath)
                 .collect(Collectors.toList());
 
-        return new PostDetailsDTO(post.getId(), post.getTitle(), post.getContent(), authorName, likeCount, comments);
+        return new PostDetailsDTO(post.getId(), post.getTitle(), post.getContent(), authorName, likeCount, imageUrls, comments);
     }
+
+
 
     /**
      * 게시글좋아요를 반영할때 유저의 정보를 같이 넣어 등록합니다
+     *
      * @param postId 게시글 번호입니다
      * @param userId 좋아요를 등록할 유저입니다
      */
     @Override
     public void addLikePost(Long postId, Long userId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(()-> new EntityNotFoundException("찾는 게시글이 없습니다"+postId+"번호"));
+                .orElseThrow(() -> new EntityNotFoundException("찾는 게시글이 없습니다" + postId + "번호"));
         Member member = memberRepository.findById(userId)
-                .orElseThrow(()-> new EntityNotFoundException("찾는 회원이 없습니다"+userId));
+                .orElseThrow(() -> new EntityNotFoundException("찾는 회원이 없습니다" + userId));
         Like like = new Like();
         like.setPost(post);
         like.setMember(member);
@@ -75,8 +97,9 @@ public class PostServiceImpl implements PostService{
     /**
      * 게시글에 댓글을 등록합니다 유저의 정보를 같이 넣어 등록하며
      * 댓글 내용을 포함하여 등록합니다
-     * @param postId 게시글번호입니다
-     * @param userId 유저 정보입니다
+     *
+     * @param postId  게시글번호입니다
+     * @param userId  유저 정보입니다
      * @param content 댓글내용입니다
      */
     @Override
@@ -92,5 +115,90 @@ public class PostServiceImpl implements PostService{
         replyRepository.save(reply);
     }
 
+    @Override
+    public void insertPost(CustomUserDetails userDetails, PostDTO postDTO, List<MultipartFile> images) {
 
+        // 로그인된 멤버의 ID로 Member 객체 조회
+        Member member = memberRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        // 게시글 설정
+        Post post = new Post();
+        post.setTitle(postDTO.getTitle());
+        post.setMember(member);
+        post.setContent(postDTO.getContent());
+        post.setUploadDate(LocalDateTime.now());
+        Post savedPost = postRepository.save(post);
+
+        // 이미지 처리
+        if (images != null && !images.isEmpty()) {
+            for(MultipartFile image: images){
+                String imagePath = createImagePath(image);
+                saveImageToPost(savedPost, imagePath);
+            }
+        }
+    }
+
+
+
+    private String createImagePath(MultipartFile image) {
+        try {
+            if (image.isEmpty()) {
+                throw new IllegalArgumentException("파일이 없습니다.");
+            }
+
+            if (!isImageFile(image)) {
+                throw new IllegalArgumentException("이미지 파일이 아닙니다.");
+            }
+
+            //이미지 저장경로를 개발 소스 경로에 임시로 저장하기 위한 용도로 사용됨
+            String uploadDirectory = "src/main/resources/static/images";
+            Path uploadPath = Paths.get(uploadDirectory);
+
+            // 경로 없으면 생성
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            // UUID 생성
+            String uuid = UUID.randomUUID().toString();
+
+            // 저장할 파일명 생성
+            String imageName = uuid + "_" + image.getOriginalFilename();
+
+            // 저장할 파일 경로 설정
+            Path path = uploadPath.resolve(imageName);
+
+            // 파일 저장
+            Files.copy(image.getInputStream(), path);
+
+            return "images" + File.separator + imageName;
+        } catch (IOException e) {
+
+            logger.error("Failed to save image: " + e.getMessage(), e);
+
+            return null;
+        }
+    }
+
+    private boolean isImageFile(MultipartFile image) {
+        String contentType = image.getContentType();
+        return contentType != null && contentType.startsWith("image");
+    }
+
+
+    //이미지와 게시글 연결
+    private void saveImageToPost(Post post, String imagePath) {
+
+        PostImage postImage = imageRepository.findByImagePath(imagePath);
+        if (postImage == null) {
+            // postImage가 null일 때의 처리 로직
+            // 예: 새 PostImage 객체를 생성하거나, 에러 메시지를 로깅
+            postImage = new PostImage();
+            postImage.setImagePath(imagePath);
+            // 필요하다면 다른 초기화 코드
+        }
+        postImage.setPost(post);
+        imageRepository.save(postImage);
+    }
 }

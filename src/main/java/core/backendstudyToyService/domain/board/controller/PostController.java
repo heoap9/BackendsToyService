@@ -1,21 +1,27 @@
 package core.backendstudyToyService.domain.board.controller;
 
 
+import core.backendstudyToyService.domain.board.dto.PostDTO;
 import core.backendstudyToyService.domain.board.dto.PostDetailsDTO;
 import core.backendstudyToyService.domain.board.service.PostService;
+import core.backendstudyToyService.domain.member.entitiy.CustomUserDetails;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
 
 @Controller
 @AllArgsConstructor//현재 구현체가 하나이므로 생성자 주입을 사용했습니다
 //별도의 서비스 구현체가 있다면 바꿔주세요
 public class PostController {
-//메롱
+    //메롱
     private PostService postService;
 
     /**
@@ -25,21 +31,22 @@ public class PostController {
      * @return 게시글 번호를 등록하면 디테일폼으로 반환합니다
      */
     @GetMapping("/posts/{postId}")
-    public String getPostDetails(@PathVariable Long postId, Model model){
+    public String getPostDetails(@PathVariable Long postId, Model model) {
         try {
             PostDetailsDTO postDetailsDTO = postService.getPostDetails(postId);
-            //이미지 프로세싱은 보류
-            model.addAttribute("postDetails",postDetailsDTO);
+            model.addAttribute("postDetails", postDetailsDTO);
             return "post-details";
-        }catch (RuntimeException e){
-            model.addAttribute("에러!",e.getMessage());
-            return "error";
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage()); // "에러!"에서 "error"로 변경
+           return "error";
         }
     }
+
 
     @GetMapping("/posts")
     public String getPostList(Model model){
         model.addAttribute("posts",postService.findAllPosts());
+        model.addAttribute("postDTO", new PostDTO()); // 새로운 게시글 작성을 위한 객체 추가
         return "post-list";
     }
 
@@ -69,4 +76,35 @@ public class PostController {
         postService.addCommentPost(postId,userId,content);
         return "redirect:/posts/"+postId;
     }//세션정보가 추가되면 파라미터에 추가해주세요!
+
+
+
+
+
+
+
+    // 글 작성 페이지 로드
+    @GetMapping("/posts/newPost")
+    public String getInsertPage(Model model) {
+        model.addAttribute("postDTO", new PostDTO());
+        return "newpost";
+    }
+
+
+    /**
+     * 게시글을 등록합니다
+     * 텍스트가 기본이며, 이미지는 선택사항
+     */
+    @PostMapping("/posts/newPost")
+    public String insertPost(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute PostDTO postDTO, @RequestParam(required = false) MultipartFile[] images) throws IOException {
+
+        postDTO.setUploadDate(LocalDateTime.now());
+        if (images != null && images.length > 0) {
+            postService.insertPost(userDetails, postDTO, Arrays.asList(images));
+        } else {
+            System.out.println("[PostController] 사진 없을때 if문 통과...");
+            postService.insertPost(userDetails, postDTO, Collections.emptyList());
+        }
+        return "redirect:/posts";
+    }
 }

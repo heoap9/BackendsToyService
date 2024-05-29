@@ -11,4 +11,5 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Long> {
     // 특정 회원이 작성한 게시글 조회
     List<Post> findByMemberId(Long memberId);
+
 }

@@ -7,7 +7,7 @@
 <body>
 <div class="container">
     <h1>Posts</h1>
-    <a th:href="@{/posts/new}" class="btn">Create New Post</a>
+    <a th:href="@{/posts/newPost}" class="btn">Create New Post</a>
     <ul>
         <li th:each="post : ${posts}">
             <a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}">Post Title</a>

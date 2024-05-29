@@ -10,17 +10,15 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+      #어플리케이션 시점에 테이블 다지우고 jpa엔티티 정보로 생성함
       #create 어플리케이션 시점에 테이블 다지우고 jpa엔티티 정보로 생성함
       #update 데이터를 저장해둠
     properties:
       hibernate:
         show_sql: true
-#        프린트로 찍음
+        #프린트로 찍음
         format_sql: true
-  servlet:
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 20MB
+
 
 # mysql 설정
 #spring:
@@ -41,10 +39,14 @@ spring:
 #      hibernate.format_sql: true
 
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+
   web:
     resources:
       static-locations: classpath:/static/
-
 
 logging:
   level:
