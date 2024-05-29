@@ -11,8 +11,6 @@ pipeline {
         REMOTE_DIR = '/root/spring-app'
         SSH_CREDENTIALS_ID = 'jenkins'
         JAR_NAME = 'BackendsService-0.0.1-SNAPSHOT.jar'
-        HTML_SRC_DIR = 'src/main/resources' // HTML 파일이 있는 디렉토리
-        HTML_DEST_DIR = 'src/main/resources' // 원격 서버에서 HTML 파일이 배포될 디렉토리
     }
 
     stages {
@@ -41,7 +39,7 @@ pipeline {
                 success {
                     sh 'echo "Success build"'
                     // 빌드된 파일 목록 확인
-                    sh 'ls -l build/libs/'
+                    sh 'ls -l build/'
                 }
                 failure {
                     sh 'echo "Fail build"'
@@ -51,19 +49,17 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                // 빌드된 JAR 파일 및 HTML 파일을 원격 서버로 전송
+                // 빌드된 JAR 파일 및 전체 빌드 폴더를 원격 서버로 전송
                 sshagent(credentials: [SSH_CREDENTIALS_ID]) {
-                    // JAR 파일 전송
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "pwd; ls -l ${REMOTE_DIR}"'
-                    sh 'scp -o StrictHostKeyChecking=no build/libs/${JAR_NAME} ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}'
-                    // HTML 파일 전송
+                    // 빌드 폴더를 원격 서버로 전송
+                    sh 'scp -o StrictHostKeyChecking=no -r build ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}'
+                    // 원격 서버에서 기존 프로세스를 종료하고 새 JAR 파일로 애플리케이션을 시작
                     sh """
-                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "mkdir -p ${HTML_DEST_DIR}"
-                    scp -o StrictHostKeyChecking=no -r ${HTML_SRC_DIR}/* ${REMOTE_USER}@${REMOTE_HOST}:${HTML_DEST_DIR}
+                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} <<EOF
+                    pkill -f 'java -jar ${REMOTE_DIR}/build/libs/${JAR_NAME}' || true
+                    nohup java -jar ${REMOTE_DIR}/build/libs/${JAR_NAME} > ${REMOTE_DIR}/app.log 2>&1 &
+                    EOF
                     """
-                    // 기존 프로세스 종료 및 새로운 JAR 파일 실행
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} pkill -f "java -jar ${REMOTE_DIR}/${JAR_NAME}" || true'
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "nohup java -jar ${REMOTE_DIR}/${JAR_NAME} > ${REMOTE_DIR}/app.log 2>&1 &"'
                 }
             }
             post {
