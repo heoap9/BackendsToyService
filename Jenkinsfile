@@ -49,13 +49,13 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                // 빌드된 JAR 파일 및 전체 빌드 폴더를 원격 서버로 전송
+                // 빌드된 전체 build 폴더를 원격 서버로 전송
                 sshagent(credentials: [SSH_CREDENTIALS_ID]) {
-                    // 빌드 폴더를 원격 서버로 전송
+                    // 원격 서버에 빌드 폴더 전송
                     sh 'scp -o StrictHostKeyChecking=no -r build ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}'
                     // 원격 서버에서 기존 프로세스를 종료하고 새 JAR 파일로 애플리케이션을 시작
                     sh """
-                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} <<EOF
+                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} << 'EOF'
                     pkill -f 'java -jar ${REMOTE_DIR}/build/libs/${JAR_NAME}' || true
                     nohup java -jar ${REMOTE_DIR}/build/libs/${JAR_NAME} > ${REMOTE_DIR}/app.log 2>&1 &
                     EOF
