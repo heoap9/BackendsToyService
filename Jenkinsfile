@@ -11,6 +11,8 @@ pipeline {
         REMOTE_DIR = '/root/spring-app'
         SSH_CREDENTIALS_ID = 'jenkins'
         JAR_NAME = 'BackendsService-0.0.1-SNAPSHOT.jar'
+        HTML_SRC_DIR = 'src/main/resources/static' // HTML 파일이 있는 디렉토리
+        HTML_DEST_DIR = '/var/www/html' // 원격 서버에서 HTML 파일이 배포될 디렉토리
     }
 
     stages {
@@ -49,12 +51,18 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                // 빌드된 JAR 파일을 원격 서버로 전송
+                // 빌드된 JAR 파일 및 HTML 파일을 원격 서버로 전송
                 sshagent(credentials: [SSH_CREDENTIALS_ID]) {
+                    // JAR 파일 전송
                     sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "pwd; ls -l ${REMOTE_DIR}"'
                     sh 'scp -o StrictHostKeyChecking=no build/libs/${JAR_NAME} ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}'
+                    // HTML 파일 전송
+                    sh """
+                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "mkdir -p ${HTML_DEST_DIR}"
+                    scp -o StrictHostKeyChecking=no -r ${HTML_SRC_DIR}/* ${REMOTE_USER}@${REMOTE_HOST}:${HTML_DEST_DIR}
+                    """
+                    // 기존 프로세스 종료 및 새로운 JAR 파일 실행
                     sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} pkill -f "java -jar ${REMOTE_DIR}/${JAR_NAME}" || true'
-                    // 새로운 JAR 파일 실행 명령어 추가
                     sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "nohup java -jar ${REMOTE_DIR}/${JAR_NAME} > ${REMOTE_DIR}/app.log 2>&1 &"'
                 }
             }
