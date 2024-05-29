@@ -64,7 +64,11 @@ pipeline {
                     sh 'echo "Success deploy"'
                 }
                 failure {
-                    sh 'echo "Fail deploy"'
+                    script {
+                        echo "Fail deploy"
+                        // 디버깅 정보를 출력하기 위해 원격 서버에서 로그 파일 출력
+                        sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "tail -n 100 ${REMOTE_DIR}/app.log"'
+                    }
                 }
             }
         }
