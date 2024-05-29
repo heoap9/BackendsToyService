@@ -11,8 +11,8 @@ pipeline {
         REMOTE_DIR = '/root/spring-app'
         SSH_CREDENTIALS_ID = 'jenkins'
         JAR_NAME = 'BackendsService-0.0.1-SNAPSHOT.jar'
-        HTML_SRC_DIR = 'src/main/resources/static' // HTML 파일이 있는 디렉토리
-        HTML_DEST_DIR = '/var/www/html' // 원격 서버에서 HTML 파일이 배포될 디렉토리
+        HTML_SRC_DIR = 'src/main/resources' // HTML 파일이 있는 디렉토리
+        HTML_DEST_DIR = 'src/main/resources' // 원격 서버에서 HTML 파일이 배포될 디렉토리
     }
 
     stages {
