@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Controller
 @AllArgsConstructor//현재 구현체가 하나이므로 생성자 주입을 사용했습니다
@@ -99,12 +100,17 @@ public class PostController {
     public String insertPost(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute PostDTO postDTO, @RequestParam(required = false) MultipartFile[] images) throws IOException {
 
         postDTO.setUploadDate(LocalDateTime.now());
-        if (images != null && images.length > 0) {
-            postService.insertPost(userDetails, postDTO, Arrays.asList(images));
+
+        List<MultipartFile> imageList = Arrays.asList(images);
+
+        if (imageList.stream().anyMatch(image -> image != null && !image.isEmpty())) {
+            System.out.println("images ===========> " + imageList.stream().map(MultipartFile::getOriginalFilename).toList());
+            postService.insertPost(userDetails, postDTO, imageList);
         } else {
             System.out.println("[PostController] 사진 없을때 if문 통과...");
             postService.insertPost(userDetails, postDTO, Collections.emptyList());
         }
+
         return "redirect:/posts";
     }
 }

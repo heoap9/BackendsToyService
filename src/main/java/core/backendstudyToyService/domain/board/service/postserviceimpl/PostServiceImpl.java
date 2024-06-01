@@ -16,7 +16,13 @@ import core.backendstudyToyService.domain.board.service.PostService;
 import core.backendstudyToyService.domain.member.entitiy.CustomUserDetails;
 import core.backendstudyToyService.domain.member.entitiy.Member;
 import core.backendstudyToyService.domain.member.repository.MemberRepository;
+import io.minio.GetPresignedObjectUrlArgs;
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
+import io.minio.errors.MinioException;
+import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,9 +34,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -44,6 +53,13 @@ public class PostServiceImpl implements PostService {
     private final MemberRepository memberRepository;
     private final LikeRepository likeRepository;
     private final ReplyRepository replyRepository;
+    private final MinioClient minioClient;
+
+    /**
+     * 버킷 이름 주입
+     * */
+    @Value("${minio.bucket-name}")
+    private String minioBucketName;
 
     /**
      * 게시글의 작성자,제목,글쓴내용을 모두 반영하여 반환합니다
@@ -130,18 +146,21 @@ public class PostServiceImpl implements PostService {
         post.setUploadDate(LocalDateTime.now());
         Post savedPost = postRepository.save(post);
 
-        // 이미지 처리
-        if (images != null && !images.isEmpty()) {
+        // 이미지가 있을 때만 처리
+        if (!images.isEmpty()) {
+            System.out.println("[PostServiceImpl-insertPost]이미지 있을때 조건문 통과");
             for(MultipartFile image: images){
-                String imagePath = createImagePath(image);
-                saveImageToPost(savedPost, imagePath);
+                String imageUrl = uploadImageToMinio(image); // 이미지 S3에 업로드
+                if (imageUrl != null) { // 이미지 업로드 성공한 경우에만 이미지와 게시글 연결
+                    saveImageToPost(savedPost, imageUrl);
+                }
             }
         }
     }
 
 
 
-    private String createImagePath(MultipartFile image) {
+    private String uploadImageToMinio(MultipartFile image) {
         try {
             if (image.isEmpty()) {
                 throw new IllegalArgumentException("파일이 없습니다.");
@@ -151,33 +170,28 @@ public class PostServiceImpl implements PostService {
                 throw new IllegalArgumentException("이미지 파일이 아닙니다.");
             }
 
-            //이미지 저장경로를 개발 소스 경로에 임시로 저장하기 위한 용도로 사용됨
-            String uploadDirectory = "src/main/resources/static/images";
-            Path uploadPath = Paths.get(uploadDirectory);
+            minioClient.putObject(
+                    PutObjectArgs.builder()
+                            .bucket(minioBucketName)
+                            .object(image.getOriginalFilename())
+                            .stream(image.getInputStream(), image.getSize(), -1)
+                            .build()
+            );
 
-            // 경로 없으면 생성
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
+            return minioClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(Method.GET)
+                            .bucket(minioBucketName)
+                            .object(image.getOriginalFilename())
+                            .expiry(1, TimeUnit.HOURS)  // url 만료시간 설정
+                            .build()
+            );
 
-            // UUID 생성
-            String uuid = UUID.randomUUID().toString();
-
-            // 저장할 파일명 생성
-            String imageName = uuid + "_" + image.getOriginalFilename();
-
-            // 저장할 파일 경로 설정
-            Path path = uploadPath.resolve(imageName);
-
-            // 파일 저장
-            Files.copy(image.getInputStream(), path);
-
-            return "images" + File.separator + imageName;
-        } catch (IOException e) {
-
+        } catch (MinioException | IOException e) {
             logger.error("Failed to save image: " + e.getMessage(), e);
-
             return null;
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new RuntimeException(e);
         }
     }
 
