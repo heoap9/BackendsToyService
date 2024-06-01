@@ -5,6 +5,7 @@ import core.backendstudyToyService.domain.member.entitiy.Member;
 import core.backendstudyToyService.domain.member.repository.MemberRepository;
 import core.backendstudyToyService.domain.member.service.MemberService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.NullValueInNestedPathException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.security.Principal;
 
 @Controller
 public class MemberController {
@@ -57,6 +60,23 @@ public class MemberController {
             return ResponseEntity.ok("사용 가능한 사용자명입니다.");
         } else {
             return ResponseEntity.ok("이미 사용 중인 사용자명입니다. 다른 이름을 시도해주세요.");
+        }
+    }
+
+
+    /* 회원 탈퇴
+    * 로그인되어 있는 객체를 가져와 사용자 이름을 DB에서 확인하고 삭제*/
+    @PostMapping("/delete")
+    public String deleteMember(Principal principal) {
+        try {
+            String username = principal.getName();
+            if (!username.isEmpty()) {
+                memberService.deleteMember(username);
+            }
+            return "redirect:/login";
+
+        } catch (Exception e) {
+            throw new NullPointerException("탈퇴에 실패하였습니다.");
         }
     }
 }

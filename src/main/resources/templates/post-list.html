@@ -17,8 +17,8 @@
     <a th:href="@{/posts/newPost}" class="btn">Create New Post</a>
     <!-- 회원 탈퇴 링크 -->
     <div class="user-menu">
-        <form th:action="@{/delete}" method="post">
-            <button type="submit">회원 탈퇴</button>
+        <form th:id="deleteForm" th:action="@{/delete}" method="post">
+            <button th:type="button" th:onclick="button_event()">회원 탈퇴</button>
         </form>
     </div>
     <ul>
@@ -27,5 +27,16 @@
         </li>
     </ul>
 </div>
+
+<script>
+    function button_event(){
+        if (confirm("정말로 탈퇴하시겠습니까?") === true){
+            document.getElementById("deleteForm").submit();
+        }else{
+            return;
+        }
+    }
+</script>
+
 </body>
 </html>

@@ -11,8 +11,6 @@
                 alert("Please check your name and pw.");
                 return false;
             }
-            if()
-
         }
     </script>
 </head>
@@ -25,8 +23,12 @@
         <div>
             <input type="submit" value="Login"/>
             <a href="/signup">Sign up</a>
+            <div th:if="${param.error}">
+                <p>id와 비밀 번호를 확인해 주세요.</p>
+            </div>
         </div>
     </form>
+
 </div>
 </body>
 </html>

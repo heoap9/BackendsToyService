@@ -8,9 +8,12 @@
 <div class="container">
     <h1>Sign Up</h1>
     <form id="signupForm" th:action="@{/signup}" method="post" onsubmit="return validateForm()">
-        <label for="usernameInput">Username:</label>
+        <div><label for="usernameInput">Username:</label>
         <input type="text" id="usernameInput" name="username">
+        </div>
+        <!--중복 확인 메세지 출력-->
         <div id="availabilityMessage"></div>
+
         <div><label>Password: <input type="password" name="password"/></label></div>
         <div><input type="submit" id="Register" value="Register"/></div> <!-- 버튼의 id를 "Register"로 설정 -->
     </form>
@@ -33,7 +36,7 @@
                     }
                 },
                 error: function () {
-                    $('#availabilityMessage').text('서버에서 사용자명을 확인하는 중 오류가 발생했습니다.');
+                    $('#availabilityMessage').text('사용하실 id를 입력해주세요.');
                 }
             });
         });
