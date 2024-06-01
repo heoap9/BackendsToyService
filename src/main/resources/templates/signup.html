@@ -21,24 +21,34 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
     $(document).ready(function(){
-        $('#usernameInput').on('input', function(){
+        $('#usernameInput').on('input', function() {
             var username = $(this).val().trim();
-            $.ajax({
-                type: 'GET',
-                url: '/signup/checkUsername/' + username,
-                success: function (data) {
-                    if (data === "사용 가능한 사용자명입니다.") {
-                        $('#availabilityMessage').text(data);
-                        $('#Register').prop('disabled', false); // 버튼의 id를 "Register"로 설정
-                    } else {
-                        $('#availabilityMessage').text(data);
-                        $('#Register').prop('disabled', true); // 버튼의 id를 "Register"로 설정
-                    }
-                },
-                error: function () {
-                    $('#availabilityMessage').text('사용하실 id를 입력해주세요.');
+            if (username === '') {
+                $('#availabilityMessage').text('사용하실 id를 입력해주세요.');
+                $('#Register').prop('disabled', true);
+            } else {
+                if (/[^a-zA-Z0-9]/.test(username)) {
+                    $('#availabilityMessage').text('아이디에는 특수 문자를 사용할 수 없습니다.');
+                    $('#Register').prop('disabled', true);
+                } else {
+                    $.ajax({
+                        type: 'GET',
+                        url: '/signup/checkUsername/' + username,
+                        success: function (data) {
+                            if (data === "사용 가능한 사용자명입니다.") {
+                                $('#availabilityMessage').text(data);
+                                $('#Register').prop('disabled', false); // 버튼의 id를 "Register"로 설정
+                            } else {
+                                $('#availabilityMessage').text(data);
+                                $('#Register').prop('disabled', true); // 버튼의 id를 "Register"로 설정
+                            }
+                        },
+                        error: function () {
+                            $('#availabilityMessage').text('사용하실 id를 입력해주세요.');
+                        }
+                    });
                 }
-            });
+            }
         });
     });
 

@@ -4,8 +4,7 @@ import core.backendstudyToyService.domain.member.dto.MemberDTO;
 import core.backendstudyToyService.domain.member.entitiy.Member;
 import core.backendstudyToyService.domain.member.repository.MemberRepository;
 import core.backendstudyToyService.domain.member.service.MemberService;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.NullValueInNestedPathException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
