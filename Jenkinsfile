@@ -56,16 +56,16 @@ pipeline {
                     sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "pwd; ls -l ${REMOTE_DIR}"'
 
                     // JAR 파일 전송
-                    sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" ${BUILD_DIR}/${JAR_NAME} ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}'
+                    sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" ${BUILD_DIR}/${JAR_NAME} ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/build/libs/'
 
                     // 정적 리소스 파일 전송 (폴더 구조 유지)
                     sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" ${STATIC_RESOURCES_DIR}/ ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/resources/'
 
                     // 이전 실행 중인 JAR 파일 종료
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} pkill -f "java -jar ${REMOTE_DIR}/${JAR_NAME}" || true'
+                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} pkill -f "java -jar ${REMOTE_DIR}/build/libs/${JAR_NAME}" || true'
 
                     // 새로운 JAR 파일 실행
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "nohup java -jar ${REMOTE_DIR}/${JAR_NAME} > ${REMOTE_DIR}/app.log 2>&1 &"'
+                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "nohup java -jar ${REMOTE_DIR}/build/libs/${JAR_NAME} > ${REMOTE_DIR}/app.log 2>&1 &"'
                 }
             }
             post {
