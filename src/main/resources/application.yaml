@@ -40,7 +40,6 @@ logging:
     org.springframework.security: debug
 #로거로 찍음
 #pstm의 특성을 잘 가져가야만 한다
-
 thymeleaf:
   prefix: classpath:/templates/
   suffix: .html
