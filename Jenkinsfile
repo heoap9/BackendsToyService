@@ -62,7 +62,7 @@ pipeline {
                     sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" ${STATIC_RESOURCES_DIR}/ ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/resources/'
 
                     // 이전 실행 중인 JAR 파일 종료
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} pkill -f "java -jar ${REMOTE_DIR}/build/libs/${JAR_NAME}" || true'
+                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "pgrep -f \'java -jar ${REMOTE_DIR}/build/libs/${JAR_NAME}\' | xargs --no-run-if-empty kill" || true'
 
                     // 새로운 JAR 파일 실행
                     sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "nohup java -jar ${REMOTE_DIR}/build/libs/${JAR_NAME} > ${REMOTE_DIR}/app.log 2>&1 &"'
