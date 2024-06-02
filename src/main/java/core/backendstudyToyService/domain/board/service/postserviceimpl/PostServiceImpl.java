@@ -38,6 +38,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -101,9 +102,16 @@ public class PostServiceImpl implements PostService {
     @Override
     public void addLikePost(Long postId, Long userId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new EntityNotFoundException("찾는 게시글이 없습니다" + postId + "번호"));
+                .orElseThrow(() -> new EntityNotFoundException("찾는 게시글이 없습니다 " + postId + " 번호"));
         Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("찾는 회원이 없습니다" + userId));
+                .orElseThrow(() -> new EntityNotFoundException("찾는 회원이 없습니다 " + userId));
+
+        Optional<Like> existingLike = likeRepository.findByPostIdAndMemberId(postId, userId);
+        if (existingLike.isPresent()) {
+            // 이미 좋아요가 등록되어 있음
+            return;
+        }
+
         Like like = new Like();
         like.setPost(post);
         like.setMember(member);

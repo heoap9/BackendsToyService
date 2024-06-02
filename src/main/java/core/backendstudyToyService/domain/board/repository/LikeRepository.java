@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -14,5 +15,7 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
 
     // 특정 회원이 누른 좋아요 조회
     List<Like> findByMemberId(Long memberId);
+
+    Optional<Like> findByPostIdAndMemberId(Long postId, Long memberId);
 
 }
