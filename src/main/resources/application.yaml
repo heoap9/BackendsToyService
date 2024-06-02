@@ -42,7 +42,7 @@ logging:
 #pstm의 특성을 잘 가져가야만 한다
 
 thymeleaf:
-  prefix=classpath: templates/
+  prefix: classpath:/templates/
   suffix: .html
   check-template-location: true
   cache: false

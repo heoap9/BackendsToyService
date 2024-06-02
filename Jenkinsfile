@@ -48,6 +48,14 @@ pipeline {
             }
         }
 
+        stage('Verify Deployment') {
+            steps {
+                sshagent(credentials: [SSH_CREDENTIALS_ID]) {
+                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "ls -R ${REMOTE_DIR}"'
+                }
+            }
+        }
+
         stage('Server Monitoring') {
             steps {
                 sshagent(credentials: [SSH_CREDENTIALS_ID]) {
