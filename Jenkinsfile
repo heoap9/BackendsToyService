@@ -11,6 +11,7 @@ pipeline {
         REMOTE_DIR = '/root/spring-app'
         SSH_CREDENTIALS_ID = 'jenkins'
         JAR_NAME = 'BackendsService-0.0.1-SNAPSHOT.jar'
+        STATIC_RESOURCES_DIR = 'src/main/resources'
     }
 
     stages {
@@ -49,10 +50,15 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                // 빌드된 JAR 파일을 원격 서버로 전송
+                // 빌드된 JAR 파일과 정적 리소스 파일을 원격 서버로 전송
                 sshagent(credentials: [SSH_CREDENTIALS_ID]) {
                     sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "pwd; ls -l ${REMOTE_DIR}"'
                     sh 'scp -o StrictHostKeyChecking=no build/libs/${JAR_NAME} ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}'
+
+                    // 정적 리소스 디렉토리를 원격 서버로 전송
+                    sh 'scp -o StrictHostKeyChecking=no -r ${STATIC_RESOURCES_DIR}/templates ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/resources/'
+                    sh 'scp -o StrictHostKeyChecking=no -r ${STATIC_RESOURCES_DIR}/static ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/resources/'
+
                     sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} pkill -f "java -jar ${REMOTE_DIR}/${JAR_NAME}" || true'
                     // 새로운 JAR 파일 실행 명령어 추가
                     sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "nohup java -jar ${REMOTE_DIR}/${JAR_NAME} > ${REMOTE_DIR}/app.log 2>&1 &"'
