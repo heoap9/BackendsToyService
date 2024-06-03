@@ -50,7 +50,7 @@ thymeleaf:
     static-path-pattern: "/static/**"
 
 
-# MinlO 설정 추가
+# MiniO 설정 추가
 minio:
   endpoint: http://59.8.166.205:8151
   access-key: Y8tMEamitzyP9UMt97mC
