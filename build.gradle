@@ -21,24 +21,11 @@ repositories {
     mavenCentral()
 }
 
-bootJar {
-    dependsOn processResources
-    from("src/main/resources/templates") {
-        into("BOOT-INF/classes/templates")
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    }
-    from("src/main/resources/static") {
-        into("BOOT-INF/classes/static")
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    }
-}
-
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-devtools'
-    implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.1")
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'io.minio:minio:8.4.2'
@@ -47,11 +34,33 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.modelmapper:modelmapper:2.4.2'
-
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+task copyTemplates(type: Copy) {
+    from 'src/main/resources/templates'
+    into 'build/resources/main/templates'
+}
+
+tasks.named('processResources') {
+    dependsOn copyTemplates
+}
+
+bootJar {
+    dependsOn processResources
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    from('build/resources/main/templates') {
+        into('BOOT-INF/classes/templates')
+    }
+    from("src/main/resources/static") {
+        into("BOOT-INF/classes/static")
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
