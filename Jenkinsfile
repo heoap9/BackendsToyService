@@ -31,8 +31,8 @@ pipeline {
             steps {
                 sshagent([SSH_CREDENTIALS_ID]) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "mkdir -p ${REMOTE_DIR}/libs" &&
-                        rsync -avz -e 'ssh -o StrictHostKeyChecking=no' ${BUILD_DIR}/${JAR_NAME} ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/libs/ &&
+                        ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "mkdir -p ${REMOTE_DIR}/libs"
+                        rsync -avz -e 'ssh -o StrictHostKeyChecking=no' ${BUILD_DIR}/${JAR_NAME} ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/libs/
                         ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "chmod -R 755 ${REMOTE_DIR}/libs"
                     """
                 }
@@ -45,7 +45,9 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "
                         pgrep -f 'java -jar ${REMOTE_DIR}/libs/${JAR_NAME}' | xargs --no-run-if-empty kill || true &&
-                        nohup java -jar ${REMOTE_DIR}/libs/${JAR_NAME} > ${REMOTE_DIR}/app.log 2>&1 &"
+                        nohup java -jar ${REMOTE_DIR}/libs/${JAR_NAME} > ${REMOTE_DIR}/app.log 2>&1 &
+                        sleep 5
+                        pgrep -f 'java -jar ${REMOTE_DIR}/libs/${JAR_NAME}' || echo 'Application failed to start'"
                     """
                 }
             }
@@ -55,7 +57,7 @@ pipeline {
             steps {
                 sshagent([SSH_CREDENTIALS_ID]) {
                     sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "ls -l ${REMOTE_DIR}"'
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "tail -n 100 ${REMOTE_DIR}/app.log"'
+                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "tail -n 100 ${REMOTE_DIR}/app.log || echo \\"Log file not found\\""'
                 }
             }
         }
