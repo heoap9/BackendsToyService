@@ -28,6 +28,7 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "
                         cd ${REMOTE_DIR} &&
+                        chmod +x ./gradlew &&
                         ./gradlew clean build &&
                         pgrep -f 'java -jar ${REMOTE_DIR}/build/libs/BackendsService-0.0.1-SNAPSHOT.jar' | xargs --no-run-if-empty kill || true &&
                         nohup java -jar ${REMOTE_DIR}/build/libs/BackendsService-0.0.1-SNAPSHOT.jar > ${REMOTE_DIR}/app.log 2>&1 &"
