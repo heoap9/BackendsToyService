@@ -41,7 +41,7 @@ pipeline {
         stage('Show Logs') {
             steps {
                 sshagent(credentials: [SSH_CREDENTIALS_ID]) {
-                    sh 'ssh -o StrictHostKeyChecking-no ${REMOTE_USER}@${REMOTE_HOST} "tail -n 100 ${REMOTE_DIR}/app.log"'
+                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "tail -n 100 ${REMOTE_DIR}/app.log"'
                 }
             }
         }
@@ -49,7 +49,7 @@ pipeline {
         stage('Verify Deployment') {
             steps {
                 sshagent(credentials: [SSH_CREDENTIALS_ID]) {
-                    sh 'ssh -o StrictHostKeyChecking-no ${REMOTE_USER}@${REMOTE_HOST} "ls -R ${REMOTE_DIR}"'
+                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "ls -R ${REMOTE_DIR}"'
                 }
             }
         }
@@ -57,7 +57,7 @@ pipeline {
         stage('Server Monitoring') {
             steps {
                 sshagent(credentials: [SSH_CREDENTIALS_ID]) {
-                    sh 'ssh -o StrictHostKeyChecking-no ${REMOTE_USER}@${REMOTE_HOST} "top -b -n 1 | head -n 20"'
+                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "top -b -n 1 | head -n 20"'
                 }
             }
         }
