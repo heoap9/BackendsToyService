@@ -54,6 +54,7 @@ pipeline {
         stage('Show Logs') {
             steps {
                 sshagent([SSH_CREDENTIALS_ID]) {
+                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "ls -l ${REMOTE_DIR}"'
                     sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "tail -n 100 ${REMOTE_DIR}/app.log"'
                 }
             }
