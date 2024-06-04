@@ -25,12 +25,13 @@ bootJar {
     dependsOn processResources
     from("src/main/resources/templates") {
         into("BOOT-INF/classes/templates")
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
     from("src/main/resources/static") {
         into("BOOT-INF/classes/static")
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
 }
-
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -47,7 +48,6 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.modelmapper:modelmapper:2.4.2'
 
-    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
