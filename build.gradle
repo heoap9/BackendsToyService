@@ -42,15 +42,6 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-task copyTemplates(type: Copy) {
-    from 'src/main/resources/templates'
-    into 'build/resources/main/templates'
-}
-
-tasks.named('processResources') {
-    dependsOn copyTemplates
-}
-
 bootJar {
     dependsOn processResources
     from {
