@@ -9,9 +9,7 @@ pipeline {
         REMOTE_HOST = '192.168.0.15'
         REMOTE_DIR = '/root/spring-app'
         SSH_CREDENTIALS_ID = 'jenkins'
-        JAR_NAME = 'BackendsService-0.0.1-SNAPSHOT.jar'
-        BUILD_DIR = 'build/libs'
-        STATIC_RESOURCES_DIR = 'src/main/resources'
+        BUILD_DIR = 'build'
     }
 
     stages {
@@ -31,13 +29,10 @@ pipeline {
         stage('Deploy') {
             steps {
                 sshagent(credentials: [SSH_CREDENTIALS_ID]) {
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "mkdir -p ${REMOTE_DIR}/resources/templates"'
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "mkdir -p ${REMOTE_DIR}/resources/static"'
-                    sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" ${BUILD_DIR}/${JAR_NAME} ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/build/libs/'
-                    sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" ${STATIC_RESOURCES_DIR}/templates ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/resources/'
-                    sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" ${STATIC_RESOURCES_DIR}/static ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/resources/'
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "pgrep -f \'java -jar ${REMOTE_DIR}/build/libs/${JAR_NAME}\' | xargs --no-run-if-empty kill" || true'
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "nohup java -jar ${REMOTE_DIR}/build/libs/${JAR_NAME} > ${REMOTE_DIR}/app.log 2>&1 &"'
+                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "mkdir -p ${REMOTE_DIR}"'
+                    sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" ${BUILD_DIR}/ ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/'
+                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "pgrep -f \'java -jar ${REMOTE_DIR}/libs/${JAR_NAME}\' | xargs --no-run-if-empty kill" || true'
+                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "nohup java -jar ${REMOTE_DIR}/libs/${JAR_NAME} > ${REMOTE_DIR}/app.log 2>&1 &"'
                 }
             }
         }
