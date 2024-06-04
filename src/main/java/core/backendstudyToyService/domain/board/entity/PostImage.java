@@ -13,7 +13,7 @@ public class PostImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="file_path")
+    @Column(name="file_path", length = 1024)
     private String filePath;
 
     @Column(name="file_name")
