@@ -9,6 +9,8 @@ pipeline {
         REMOTE_HOST = '192.168.0.15'
         REMOTE_DIR = '/root/spring-app'
         SSH_CREDENTIALS_ID = 'jenkins'
+        JAR_NAME = 'BackendsService-0.0.1-SNAPSHOT.jar'
+        BUILD_DIR = 'build/libs'
     }
 
     stages {
@@ -18,20 +20,32 @@ pipeline {
             }
         }
 
+        stage('Build') {
+            steps {
+                sh 'chmod +x ./gradlew'
+                sh './gradlew clean build'
+            }
+        }
+
         stage('Deploy to Remote') {
             steps {
                 sshagent([SSH_CREDENTIALS_ID]) {
-                    // 원격 서버에 소스 코드 전송
-                    sh "rsync -avz -e 'ssh -o StrictHostKeyChecking=no' . ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/"
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "mkdir -p ${REMOTE_DIR}/libs" &&
+                        rsync -avz -e 'ssh -o StrictHostKeyChecking=no' ${BUILD_DIR}/${JAR_NAME} ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/libs/ &&
+                        ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "chmod -R 755 ${REMOTE_DIR}/libs"
+                    """
+                }
+            }
+        }
 
-                    // 원격 서버에서 빌드 및 실행
+        stage('Run Application') {
+            steps {
+                sshagent([SSH_CREDENTIALS_ID]) {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "
-                        cd ${REMOTE_DIR} &&
-                        chmod +x ./gradlew &&
-                        ./gradlew clean build &&
-                        pgrep -f 'java -jar ${REMOTE_DIR}/build/libs/BackendsService-0.0.1-SNAPSHOT.jar' | xargs --no-run-if-empty kill || true &&
-                        nohup java -jar ${REMOTE_DIR}/build/libs/BackendsService-0.0.1-SNAPSHOT.jar > ${REMOTE_DIR}/app.log 2>&1 &"
+                        pgrep -f 'java -jar ${REMOTE_DIR}/libs/${JAR_NAME}' | xargs --no-run-if-empty kill || true &&
+                        nohup java -jar ${REMOTE_DIR}/libs/${JAR_NAME} > ${REMOTE_DIR}/app.log 2>&1 &"
                     """
                 }
             }
