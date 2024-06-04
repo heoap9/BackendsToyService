@@ -9,6 +9,7 @@ pipeline {
         REMOTE_HOST = '192.168.0.15'
         REMOTE_DIR = '/root/spring-app'
         SSH_CREDENTIALS_ID = 'jenkins'
+        JAR_NAME = 'BackendsService-0.0.1-SNAPSHOT.jar'
         BUILD_DIR = 'build'
     }
 

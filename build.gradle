@@ -21,6 +21,17 @@ repositories {
     mavenCentral()
 }
 
+bootJar {
+    dependsOn processResources
+    from("src/main/resources/templates") {
+        into("BOOT-INF/classes/templates")
+    }
+    from("src/main/resources/static") {
+        into("BOOT-INF/classes/static")
+    }
+}
+
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
