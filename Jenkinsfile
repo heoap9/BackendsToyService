@@ -31,10 +31,11 @@ pipeline {
         stage('Deploy') {
             steps {
                 sshagent(credentials: [SSH_CREDENTIALS_ID]) {
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "pwd; ls -l ${REMOTE_DIR}"'
+                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "mkdir -p ${REMOTE_DIR}/resources/templates"'
+                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "mkdir -p ${REMOTE_DIR}/resources/static"'
                     sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" ${BUILD_DIR}/${JAR_NAME} ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/build/libs/'
-                    sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" ${STATIC_RESOURCES_DIR}/templates ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/resources/templates/'
-                    sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" ${STATIC_RESOURCES_DIR}/static ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/resources/static/'
+                    sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" ${STATIC_RESOURCES_DIR}/templates ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/resources/'
+                    sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" ${STATIC_RESOURCES_DIR}/static ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/resources/'
                     sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "pgrep -f \'java -jar ${REMOTE_DIR}/build/libs/${JAR_NAME}\' | xargs --no-run-if-empty kill" || true'
                     sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "nohup java -jar ${REMOTE_DIR}/build/libs/${JAR_NAME} > ${REMOTE_DIR}/app.log 2>&1 &"'
                 }
