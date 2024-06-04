@@ -48,24 +48,4 @@ pipeline {
 
         stage('Verify Deployment') {
             steps {
-                sshagent(credentials: [SSH_CREDENTIALS_ID]) {
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "ls -R ${REMOTE_DIR}"'
-                }
-            }
-        }
-
-        stage('Server Monitoring') {
-            steps {
-                sshagent(credentials: [SSH_CREDENTIALS_ID]) {
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "top -b -n 1 | head -n 20"'
-                }
-            }
-        }
-    }
-
-    post {
-        always {
-            cleanWs()
-        }
-    }
-}
+                sshagent(credentials: [SSH_C
