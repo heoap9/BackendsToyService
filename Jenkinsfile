@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-        jdk 'jdk'
+        jdk 'jdk' // Jenkins에서 설정한 JDK 이름
     }
 
     environment {
@@ -48,7 +48,7 @@ pipeline {
                         pgrep -f 'java -jar ${REMOTE_DIR}/libs/${JAR_NAME}' | xargs --no-run-if-empty kill || true &&
                         echo 'Starting new application...';
                         nohup java -jar ${REMOTE_DIR}/libs/${JAR_NAME} > ${REMOTE_DIR}/app.log 2>&1 &
-                        sleep 5
+                        sleep 5;
                         echo 'Checking if application started...';
                         if ! pgrep -f 'java -jar ${REMOTE_DIR}/libs/${JAR_NAME}'; then
                             echo 'Application failed to start';
@@ -56,30 +56,6 @@ pipeline {
                         fi
                         tail -n 50 ${REMOTE_DIR}/app.log || echo 'Log file not found'"
                     """
-                }
-            }
-        }
-
-        stage('Show Logs') {
-            steps {
-                sshagent([SSH_CREDENTIALS_ID]) {
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "tail -n 100 ${REMOTE_DIR}/app.log || echo \\"Log file not found\\""'
-                }
-            }
-        }
-
-        stage('Verify Deployment') {
-            steps {
-                sshagent([SSH_CREDENTIALS_ID]) {
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "ls -R ${REMOTE_DIR}"'
-                }
-            }
-        }
-
-        stage('Server Monitoring') {
-            steps {
-                sshagent([SSH_CREDENTIALS_ID]) {
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "top -b -n 1 | head -n 20"'
                 }
             }
         }
