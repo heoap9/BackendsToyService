@@ -40,4 +40,11 @@ tasks.named('test') {
 bootJar {
     archiveFileName = 'BackendsService-0.0.1-SNAPSHOT.jar'
     mainClass.set('core.backendstudyToyService.BackendsServiceApplication')
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from('src/main/resources/templates') {
+        into('BOOT-INF/classes/templates')
+    }
+    from('src/main/resources/static') {
+        into('BOOT-INF/classes/static')
+    }
 }
