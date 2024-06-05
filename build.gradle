@@ -39,5 +39,5 @@ tasks.named('test') {
 
 bootJar {
     archiveFileName = 'BackendsService-0.0.1-SNAPSHOT.jar'
-    mainClassName = 'core.backendstudyToyService.BackendsServiceApplication'
+    mainClass.set('core.backendstudyToyService.BackendsServiceApplication')
 }
