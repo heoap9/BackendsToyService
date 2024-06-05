@@ -44,9 +44,12 @@ stage('Run Application') {
         sshagent([SSH_CREDENTIALS_ID]) {
             sh """
                 ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "
+                echo 'Checking existing application process...';
                 pgrep -f 'java -jar ${REMOTE_DIR}/libs/${JAR_NAME}' | xargs --no-run-if-empty kill || true &&
+                echo 'Starting new application...';
                 nohup java -jar ${REMOTE_DIR}/libs/${JAR_NAME} > ${REMOTE_DIR}/app.log 2>&1 &
                 sleep 5
+                echo 'Checking if application started...';
                 pgrep -f 'java -jar ${REMOTE_DIR}/libs/${JAR_NAME}' || echo 'Application failed to start';
                 tail -n 50 ${REMOTE_DIR}/app.log"
             """
