@@ -52,9 +52,10 @@ pipeline {
                         echo 'Checking if application started...';
                         if ! pgrep -f 'java -jar ${REMOTE_DIR}/libs/${JAR_NAME}'; then
                             echo 'Application failed to start';
+                            tail -n 50 ${REMOTE_DIR}/app.log;
                             exit 1;
                         fi
-                        tail -n 50 ${REMOTE_DIR}/app.log || echo 'Log file not found'"
+                        tail -n 50 ${REMOTE_DIR}/app.log"
                     """
                 }
             }
