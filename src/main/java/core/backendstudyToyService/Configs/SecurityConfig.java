@@ -70,8 +70,7 @@ public class SecurityConfig {
                 )
                 .headers((headers) -> headers
                         .addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN))
-                )
-                .csrf().disable(); // CSRF 비활성화 (필요시 활성화)
+                );// CSRF 비활성화 (필요시 활성화)
 
         return http.build();
     }

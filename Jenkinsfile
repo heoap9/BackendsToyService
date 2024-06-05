@@ -11,7 +11,6 @@ pipeline {
         SSH_CREDENTIALS_ID = 'jenkins'
         JAR_NAME = 'BackendsService-0.0.1-SNAPSHOT.jar'
         BUILD_DIR = 'build/libs'
-        STATIC_RESOURCES_DIR = 'src/main/resources'
     }
 
     stages {
@@ -28,30 +27,44 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy to Remote') {
             steps {
-                sshagent(credentials: [SSH_CREDENTIALS_ID]) {
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "pwd; ls -l ${REMOTE_DIR}"'
-                    sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" ${BUILD_DIR}/${JAR_NAME} ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/build/libs/'
-                    sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" ${STATIC_RESOURCES_DIR}/templates ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/resources/templates/'
-                    sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" ${STATIC_RESOURCES_DIR}/static ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/resources/static/'
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "pgrep -f \'java -jar ${REMOTE_DIR}/build/libs/${JAR_NAME}\' | xargs --no-run-if-empty kill" || true'
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "nohup java -jar ${REMOTE_DIR}/build/libs/${JAR_NAME} > ${REMOTE_DIR}/app.log 2>&1 &"'
+                sshagent([SSH_CREDENTIALS_ID]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "mkdir -p ${REMOTE_DIR}/libs"
+                        rsync -avz -e 'ssh -o StrictHostKeyChecking=no' ${BUILD_DIR}/${JAR_NAME} ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/libs/
+                        ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "chmod -R 755 ${REMOTE_DIR}/libs"
+                    """
+                }
+            }
+        }
+
+        stage('Run Application') {
+            steps {
+                sshagent([SSH_CREDENTIALS_ID]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "
+                        pgrep -f 'java -jar ${REMOTE_DIR}/libs/${JAR_NAME}' | xargs --no-run-if-empty kill || true &&
+                        nohup java -jar ${REMOTE_DIR}/libs/${JAR_NAME} > ${REMOTE_DIR}/app.log 2>&1 &
+                        sleep 5
+                        pgrep -f 'java -jar ${REMOTE_DIR}/libs/${JAR_NAME}' || echo 'Application failed to start'"
+                    """
                 }
             }
         }
 
         stage('Show Logs') {
             steps {
-                sshagent(credentials: [SSH_CREDENTIALS_ID]) {
-                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "tail -n 100 ${REMOTE_DIR}/app.log"'
+                sshagent([SSH_CREDENTIALS_ID]) {
+                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "ls -l ${REMOTE_DIR}"'
+                    sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "tail -n 100 ${REMOTE_DIR}/app.log || echo \\"Log file not found\\""'
                 }
             }
         }
 
         stage('Verify Deployment') {
             steps {
-                sshagent(credentials: [SSH_CREDENTIALS_ID]) {
+                sshagent([SSH_CREDENTIALS_ID]) {
                     sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "ls -R ${REMOTE_DIR}"'
                 }
             }
@@ -59,7 +72,7 @@ pipeline {
 
         stage('Server Monitoring') {
             steps {
-                sshagent(credentials: [SSH_CREDENTIALS_ID]) {
+                sshagent([SSH_CREDENTIALS_ID]) {
                     sh 'ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "top -b -n 1 | head -n 20"'
                 }
             }
