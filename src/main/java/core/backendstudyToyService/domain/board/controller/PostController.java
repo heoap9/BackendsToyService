@@ -61,7 +61,7 @@ public class PostController {
     public String addLikePost(@PathVariable Long postId){
         Long userId = 1L;
         postService.addLikePost(postId,userId);
-        return "redirect:/posts/"+postId;
+        return "redirect:posts/"+postId;
     }//세션정보가 추가되면 파라미터에 추가해주세요!
 
     /**
@@ -75,7 +75,7 @@ public class PostController {
     public String addComment(@PathVariable Long postId,@RequestParam String content){
         Long userId = 1L;
         postService.addCommentPost(postId,userId,content);
-        return "redirect:/posts/"+postId;
+        return "redirect:posts/"+postId;
     }//세션정보가 추가되면 파라미터에 추가해주세요!
 
 
@@ -111,6 +111,6 @@ public class PostController {
             postService.insertPost(userDetails, postDTO, Collections.emptyList());
         }
 
-        return "redirect:/posts";
+        return "redirect:posts";
     }
 }

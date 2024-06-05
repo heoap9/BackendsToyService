@@ -26,6 +26,6 @@ public class LoginController {
     public String login(MemberDTO dto) {
         System.out.println(dto.getUsername());
 
-        return "/posts";// postContorller 참조
+        return "posts";// postContorller 참조
     }
 }
