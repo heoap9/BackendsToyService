@@ -11,33 +11,24 @@ java {
     sourceCompatibility = '17'
 }
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
-
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-loader'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-devtools'
-    implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.1")
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.1'
     implementation 'io.minio:minio:8.4.2'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.modelmapper:modelmapper:2.4.2'
-
-    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
@@ -47,15 +38,6 @@ tasks.named('test') {
 }
 
 bootJar {
-    dependsOn processResources
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-    from('src/main/resources/templates') {
-        into('BOOT-INF/classes/templates')
-    }
-    from("src/main/resources/static") {
-        into("BOOT-INF/classes/static")
-    }
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    archiveFileName = 'BackendsService-0.0.1-SNAPSHOT.jar'
+    mainClassName = 'core.backendstudyToyService.BackendsServiceApplication'
 }
