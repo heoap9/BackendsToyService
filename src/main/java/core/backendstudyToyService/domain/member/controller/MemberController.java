@@ -49,7 +49,7 @@ public class MemberController {
             System.out.println("회원가입 중 오류 발생: " + e.getMessage());
             return "redirect:/signup?error=회원가입 중 오류가 발생하였습니다";
         }
-        return "redirect:login"; // 회원가입 후 로그인 페이지로 리다이렉트
+        return "redirect:/login"; // 회원가입 후 로그인 페이지로 리다이렉트
     }
 
     /* 중복 아이디 검증 로직 */
