@@ -22,7 +22,6 @@ spring:
 
     hibernate:
       ddl-auto: create
-      #어플리케이션 시점에 테이블 다지우고 jpa엔티티 정보로 생성함
     properties:
       hibernate:
         #프린트로 찍음
