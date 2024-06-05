@@ -50,7 +50,10 @@ pipeline {
                         nohup java -jar ${REMOTE_DIR}/libs/${JAR_NAME} > ${REMOTE_DIR}/app.log 2>&1 &
                         sleep 5
                         echo 'Checking if application started...';
-                        pgrep -f 'java -jar ${REMOTE_DIR}/libs/${JAR_NAME}' || echo 'Application failed to start';
+                        if ! pgrep -f 'java -jar ${REMOTE_DIR}/libs/${JAR_NAME}'; then
+                            echo 'Application failed to start';
+                            exit 1;
+                        fi
                         tail -n 50 ${REMOTE_DIR}/app.log || echo 'Log file not found'"
                     """
                 }
