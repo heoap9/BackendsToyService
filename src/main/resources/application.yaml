@@ -53,6 +53,6 @@ thymeleaf:
 # MiniO 설정 추가
 minio:
   endpoint: http://59.8.166.205:8151
-  access-key: Y8tMEamitzyP9UMt97mC
-  secret-key: EEL7fh0m4YV2IWaHWfUYj91QyIvxcntmqSkdkROV
+  access-key: gErVCPTBLCUq1WoBZxnt
+  secret-key: T7v7s1TNE2xUI2TmsKxPq6T1oWbzLl2LQFGs6d0F
   bucket-name: board
