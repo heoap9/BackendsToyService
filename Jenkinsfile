@@ -23,7 +23,8 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'chmod +x ./gradlew'
-                sh './gradlew clean build'
+                sh './gradlew clean build --refresh-dependencies'
+                sh './gradlew build --stacktrace'
             }
         }
 
