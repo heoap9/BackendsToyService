@@ -12,7 +12,7 @@ public interface MemberService {
 
     Optional<Member> findMemberById(Long memberId);
     List<Member> findAllMembers();
-    void deleteMember(Long memberId);
+    void deleteMember(String username);
     MemberDTO login(MemberDTO MemberDTO);
 
     boolean isUsernameAvailable(String username);

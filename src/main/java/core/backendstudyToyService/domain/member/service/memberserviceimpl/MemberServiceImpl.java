@@ -49,26 +49,34 @@ public class MemberServiceImpl implements MemberService {
         return null;
     }
 
-    @Override
-    public void deleteMember(Long id) {
 
-    }
-
-
-
+    // 로그인
     public MemberDTO login(MemberDTO dto) {
-       Optional<Member> enter = memberRepository.findByUsername(dto.getUsername());
+        Optional<Member> enter = memberRepository.findByUsername(dto.getUsername());
         if (enter.isPresent()) {
             Member member = enter.get();
             if (dto.getPassword().equals(member.getPassword())) {
                 return dto;
-            }else {
-                return null;
             }
         }
         return null;
     }
 
+
+    @Override
+    public void deleteMember(String username) {
+        try {
+            Optional<Member> memberOptional = memberRepository.findByUsername(username);
+            if (memberOptional.isPresent()) {
+                Member member = memberOptional.get();
+                memberRepository.delete(member);
+            } else {
+                throw new IllegalArgumentException("탈퇴에 실패했습니다.");
+            }
+        } catch (Exception e) {
+            throw e;
+        }
+    }
 
     @Override
     public boolean isUsernameAvailable(String username) {

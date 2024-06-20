@@ -3,16 +3,40 @@
 <head>
     <title>Posts</title>
     <link rel="stylesheet" href="/css/common.css">
+    <style>
+        .user-menu {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
     <h1>Posts</h1>
     <a th:href="@{/posts/newPost}" class="btn">Create New Post</a>
+    <!-- 회원 탈퇴 링크 -->
+    <div class="user-menu">
+        <form th:id="deleteForm" th:action="@{/delete}" method="post">
+            <button th:type="button" th:onclick="button_event()">회원 탈퇴</button>
+        </form>
+    </div>
     <ul>
         <li th:each="post : ${posts}">
             <a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}">Post Title</a>
         </li>
     </ul>
 </div>
+
+<script>
+    function button_event(){
+        if (confirm("정말로 탈퇴하시겠습니까?") === true){
+            document.getElementById("deleteForm").submit();
+        }else{
+            return;
+        }
+    }
+</script>
+
 </body>
 </html>

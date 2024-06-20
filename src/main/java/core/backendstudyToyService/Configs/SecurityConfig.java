@@ -9,6 +9,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -43,6 +44,7 @@ public class SecurityConfig {
         return authProvider;
     }
 
+
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -65,16 +67,14 @@ public class SecurityConfig {
                 .logout((logout) -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                         .logoutUrl("/logout")
+                        .logoutUrl("/")
                         .logoutSuccessUrl("/")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                 )
                 .headers((headers) -> headers
                         .addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN))
-<<<<<<< HEAD
-                );// CSRF 비활성화 (필요시 활성화)
-=======
-                );
+                ); // CSRF 비활성화 (필요시 활성화)
 
         http
                 .sessionManagement((auth) -> auth
@@ -84,8 +84,6 @@ public class SecurityConfig {
         http
                 .sessionManagement((auth) -> auth
                         .sessionFixation().changeSessionId());
-
->>>>>>> 9e802d0 (Committing changes before switching branches)
 
         return http.build();
     }
@@ -102,4 +100,5 @@ public class SecurityConfig {
             response.sendRedirect("/login?error=true");
         };
     }
+
 }

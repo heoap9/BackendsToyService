@@ -1,63 +1,22 @@
 # h2 설정
 spring:
   datasource:
-<<<<<<< HEAD
-#    url: jdbc:h2:tcp://localhost/~/test
-#    username: sa
-#    password:
-#    driver-class-name: org.h2.Driver
-
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://59.8.166.205:8400/test
     username: Backend
     password: redshiproot
-=======
-    url: jdbc:h2:tcp://localhost/~/test
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
 
-
-  jpa:
-    hibernate:
-      ddl-auto: create
-      #어플리케이션 시점에 테이블 다지우고 jpa엔티티 정보로 생성함
-      #create 어플리케이션 시점에 테이블 다지우고 jpa엔티티 정보로 생성함
-      #update 데이터를 저장해둠
-    properties:
-      hibernate:
-        #        show_sql: true
-        #프린트로 찍음
-        format_sql: true
-
-
-
-# mysql 설정
-#spring:
-#  datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://59.8.166.205:8400/test
-#    username: Backend
-#    password: redshiproot
-#
-#
-#  jpa:
-#    database: mysql
-#    database-platform: org.hibernate.dialect.MySQLDialect
-#    show_sql: true
-#    hibernate:
-#      ddl-auto: update
-#    properties:
-#      hibernate.format_sql: true
-
->>>>>>> 9e802d0 (Committing changes before switching branches)
+#    url: jdbc:h2:tcp://localhost/~/test
+#    username: sa
+#    password:
+#    driver-class-name: org.h2.Driver
 
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 20MB
 
-<<<<<<< HEAD
+
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQLDialect
@@ -70,8 +29,6 @@ spring:
         #프린트로 찍음
         format_sql: true
 
-=======
->>>>>>> 9e802d0 (Committing changes before switching branches)
   web:
     resources:
       static-locations: classpath:/static/
@@ -83,23 +40,16 @@ logging:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
     org.springframework.security: debug
-<<<<<<< HEAD
 #로거로 찍음
 #pstm의 특성을 잘 가져가야만 한다
 thymeleaf:
   prefix: classpath:/templates/
-=======
-
-thymeleaf:
-  prefix: classpath:/templates
->>>>>>> 9e802d0 (Committing changes before switching branches)
   suffix: .html
   check-template-location: true
   cache: false
   mvc:
     static-path-pattern: "/static/**"
 
-<<<<<<< HEAD
 
 # MiniO 설정 추가
 minio:
@@ -107,9 +57,8 @@ minio:
   access-key: gErVCPTBLCUq1WoBZxnt
   secret-key: T7v7s1TNE2xUI2TmsKxPq6T1oWbzLl2LQFGs6d0F
   bucket-name: board
-=======
+
 server:
   servlet:
     session:
       timeout: 90m
->>>>>>> 9e802d0 (Committing changes before switching branches)
