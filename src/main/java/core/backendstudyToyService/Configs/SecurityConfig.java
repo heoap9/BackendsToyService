@@ -64,13 +64,28 @@ public class SecurityConfig {
                 )
                 .logout((logout) -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                        .logoutUrl("/logout")
                         .logoutSuccessUrl("/")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                 )
                 .headers((headers) -> headers
                         .addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN))
+<<<<<<< HEAD
                 );// CSRF 비활성화 (필요시 활성화)
+=======
+                );
+
+        http
+                .sessionManagement((auth) -> auth
+                        .maximumSessions(1) // 다중의 로그인을 허용할 개수
+                        .maxSessionsPreventsLogin(true)); // true: 갯수 초과시 새로운 아이디 차단 false : 기존 세션 삭제
+
+        http
+                .sessionManagement((auth) -> auth
+                        .sessionFixation().changeSessionId());
+
+>>>>>>> 9e802d0 (Committing changes before switching branches)
 
         return http.build();
     }

@@ -25,7 +25,12 @@ dependencies {
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.1'
     implementation 'io.minio:minio:8.4.2'
     compileOnly 'org.projectlombok:lombok'
+<<<<<<< HEAD
     runtimeOnly 'com.mysql:mysql-connector-j'
+=======
+    runtimeOnly 'com.h2database:h2'
+//    runtimeOnly 'com.mysql:mysql-connector-j'
+>>>>>>> 9e802d0 (Committing changes before switching branches)
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.modelmapper:modelmapper:2.4.2'
