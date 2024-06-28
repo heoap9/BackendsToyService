@@ -5,6 +5,8 @@ import core.backendstudyToyService.domain.member.entitiy.Member;
 import core.backendstudyToyService.domain.member.repository.MemberRepository;
 import core.backendstudyToyService.domain.member.service.MemberService;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -32,7 +34,11 @@ public class MemberController {
     }
     //a
     @GetMapping("/signup")
-    public String showSignUpForm(Model model) {
+    public String showSignUpForm(Model model, HttpServletResponse response, HttpServletRequest request) {
+        // clear cache
+        response.setHeader("Cache-Control", "no-cache, no-store");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
         model.addAttribute("member", new Member());
         return "signup";
     }
