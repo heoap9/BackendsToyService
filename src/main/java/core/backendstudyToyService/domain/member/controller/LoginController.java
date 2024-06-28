@@ -23,7 +23,10 @@ public class LoginController {
 
 
     @GetMapping("/login")
-    public String showLoginForm() {
+    public String showLoginForm(HttpServletResponse response, HttpServletRequest request) {
+        response.setHeader("Cache-Control", "no-cache");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
         return "login";
     }
 
